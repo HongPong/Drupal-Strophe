@@ -1,47 +1,55 @@
 <?php
 /**
- * Implementation of hook_init().
+ * Implements hook_init().
  */
 function strophe_init() {
   static $only_once = True;
-  if($only_once) {
+  if ($only_once) {
     $only_once = False;
     global $user;
-    include_once drupal_get_path('module', 'ejabberd_auth') . '/drupalAuth.inc';
-    include_once drupal_get_path('module', 'strophe') . '/strophe.inc';
+    include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ejabberd_auth') . '/drupalAuth.inc';
+    include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
     drupal_add_js(array(
       'xmpp' => array(
         'bosh_service' => variable_get('strophe_bosh_url', '/http-bind'),
         'jid' => strophe_jid($user),
         'passwd' => ejabberd_auth_hash($user->name),
-        'nickname' => $user->name
-        )
-      )
-    , 'setting');
+        'nickname' => $user->name,
+      ),
+    )
+    , array('type' => 'setting', 'scope' => JS_DEFAULT));
     //chat 'b64', 'md5', 'sha1', 'drupal'
     $js = array('jquery.cookie', 'strophe', 'poem', 'init');
-    foreach($js as $j){
-      drupal_add_js(drupal_get_path('module', 'strophe') ."/js/$j.js");
+    foreach ($js as $j) {
+      drupal_add_js(drupal_get_path('module', 'strophe') . "/js/$j.js");
     }
-    if(0 != $user->uid) {
-      drupal_add_js(drupal_get_path('module', 'strophe') ."/js/connect.js", 'theme', 'footer');
+    if (0 != $user->uid) {
+      drupal_add_js(drupal_get_path('module', 'strophe') . "/js/connect.js", array('type' => 'file', 'scope' => 'footer', 'weight' => JS_THEME));
     }
   }
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function strophe_menu() {
-  $items['admin/settings/strophe'] = array(
+  $items['admin/config/strophe'] = array(
     'description' => 'Chat with XMPP over HTTP',
     'title' => 'Chat with bosh',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('strophe_admin_settings'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
-    );
+  );
   return $items;
 }
 
-function strophe_admin_settings() {
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function strophe_admin_settings($form, &$form_state) {
   $form['strophe_jabber'] = array(
     '#title' => t('XMPP'),
     '#type' => 'fieldset',
@@ -79,56 +87,79 @@ function strophe_admin_settings() {
     '#title' => 'Default room name',
     '#default_value' => variable_get('strophe_bot_user', 'admin'),
     '#description' => t("Bot user, should be admin your ejabberd.cfg"),
-    
   );
   $form['strophe_bot']['strophe_bot_name'] = array(
     '#type' => 'textfield',
     '#title' => 'Default room name',
     '#default_value' => variable_get('strophe_bot_name', 'The bot'),
     '#description' => t("Name of the bot"),
-    
   );
   return system_settings_form($form);
 }
 
-function strophe_block($op = 'list', $delta = 0, $edit = array()) {
-  switch ($op) {
-    case 'list':
-      $blocks[0] = array(
-        'info' => t('XMPP status'),
-        'cache' => BLOCK_NO_CACHE,
-      );
-      return $blocks;
-    case 'configure':
-      switch($delta) {
-        case 0:
-        break;
-      }
-    break;
-    case 'save':
-    break;
-    case 'view':
-      global $user;
-      if(0 == $user->uid) {
-        return;
-      }
-      switch($delta) {
-        case 0:
-          drupal_add_js(drupal_get_path('module', 'strophe') . '/js/status.js');
-          $block['subject'] = t('Status');
-          $block['content'] = theme('strophe_status');
-          return $block;
-      }
-    break;
-  };
+/**
+ * Implements hook_block_info().
+ */
+function strophe_block_info() {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  $blocks['delta-0'] = array(
+    'info' => t('XMPP status'),
+    'cache' => BLOCK_NO_CACHE,
+  );
+  return $blocks;
 }
 
+/**
+ * Implements hook_block_configure().
+ */
+function strophe_block_configure($delta) {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  switch ($delta) {
+    case 'delta-0':
+      break;
+  }
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function strophe_block_save($delta, $edit) { }
+
+/**
+ * Implements hook_block_view().
+ */
+function strophe_block_view($delta) {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  global $user;
+  if (0 == $user->uid) {
+    return;
+  }
+  switch ($delta) {
+    case 'delta-0':
+      drupal_add_js(drupal_get_path('module', 'strophe') . '/js/status.js');
+      $block['subject'] = t('Status');
+      $block['content'] = theme('strophe_status');
+      return $block;
+  }
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function strophe_block_OLD($op = 'list', $delta = 0, $edit = array()) { }
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function strophe_theme() {
   $path = drupal_get_path('module', 'strophe');
   return array(
-  'strophe_status' => array(
-    'path' => "$path/theme",
-    'template' => 'strophe_status',
-    'arguments' => array(),
-  ));
+    'strophe_status' => array(
+      'path' => "$path/theme",
+      'template' => 'strophe_status',
+      'variables' => array(),
+    ),
+  );
 }

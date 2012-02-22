@@ -1,136 +1,173 @@
 <?php
 
 class strophe_room {
-	function __construct() {
-		$this->lines = 5;
-		$this->room = 'conference';
-	}
-}
-
-function strophe_muc_block($op = 'list', $delta = 0, $edit = array()) {
-  include_once drupal_get_path('module', 'strophe') . '/strophe.inc';
-  switch ($op) {
-    case 'list':
-      $blocks[0] = array(
-        'info' => t('Multi User Chat room'),
-        'cache' => BLOCK_NO_CACHE,
-      );
-      $blocks[1] = array(
-        'info' => t('Connected chatters'),
-        'cache' => BLOCK_NO_CACHE,
-      );
-      return $blocks;
-    case 'configure':
-      switch($delta) {
-        case 0:
-          $form['strophe_block_num_lines'] = array(
-            '#type' => 'textfield',
-            '#title' => t('Number of chat line to display'),
-            '#default_value' => variable_get('strophe_block_num_lines', 5),
-          );
-          $form['strophe_block_room'] = array(
-            '#type' => 'textfield',
-            '#title' => t('Room name'),
-            '#default_value' => variable_get('strophe_block_room', 'conference'),
-            );
-        break;
-        case 1:
-          $form['strophe_link_to_talk'] = array(
-            '#type' => 'checkboxes',
-            '#title' => t('Direct talk'),
-            '#default_value' => variable_get('strophe_link_to_talk', array('talk' => 0)),
-            '#description' => t('Allow a click to a chatter name to init a talk.'),
-            '#options' => array('talk' => t('Direct talk'))
-            );
-        break;
-      }
-      return $form;
-    case 'save':
-      variable_set('strophe_block_num_lines', (int)$edit['strophe_block_num_lines']);
-      variable_set('strophe_link_to_talk', $edit['strophe_link_to_talk']);
-      break;
-    case 'view':
-      global $user;
-      if(0 == $user->uid) {
-        return;
-      }
-      $room = new strophe_room();
-      $room->lines = variable_get('strophe_block_num_lines' , 5);
-      $room->room = variable_get('strophe_block_room', 'conference') . '@conference.'. variable_get('strophe_domain', 'jabber.org');
-      static $only_once = True;
-      if($only_once) {//settings are doubled if you use a room and a presence in a same page
-        drupal_add_js(array(
-          'strophe' => array(
-            'room' => $room->room,
-            'direct_talk_url' => base_path() . 'discussion-with/',
-            'me' => $user->name
-          )), 'setting'); //[FIXME] handle multiple chat room
-        $only_once = False;
-      }
-      drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc.js');
-      switch($delta) {
-        case 0:
-          drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc_room.js');
-          $block['subject'] = t('The chat room');
-          $block['content'] = theme('strophe_muc_room', $room, $delta);
-          return $block;
-        case 1:
-          $ltt = variable_get('strophe_link_to_talk', array('talk' => 0));
-          drupal_add_js(array(
-            'strophe' =>array('click_to_talk' => ($ltt['talk'] !== 0))
-            ), 'setting');
-          drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc_presence.js');
-          $block['subject'] = t('Presence list');
-          $block['content'] = theme('strophe_muc_presence', $room);
-          return $block;
-      }
+  function __construct() {
+    $this->lines = 5;
+    $this->room = 'conference';
   }
 }
 
 /**
- * Implementation of hook_theme
+ * Implements hook_block_info().
+ */
+function strophe_muc_block_info() {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  $blocks['delta-0'] = array(
+    'info' => t('Multi User Chat room'),
+    'cache' => BLOCK_NO_CACHE,
+  );
+  $blocks['delta-1'] = array(
+    'info' => t('Connected chatters'),
+    'cache' => BLOCK_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function strophe_muc_block_configure($delta) {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  switch ($delta) {
+    case 'delta-0':
+      $form['strophe_block_num_lines'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Number of chat line to display'),
+        '#default_value' => variable_get('strophe_block_num_lines', 5),
+      );
+      $form['strophe_block_room'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Room name'),
+        '#default_value' => variable_get('strophe_block_room', 'conference'),
+      );
+      break;
+    case 'delta-1':
+      $form['strophe_link_to_talk'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Direct talk'),
+        '#default_value' => variable_get('strophe_link_to_talk', array('talk' => 0)),
+        '#description' => t('Allow a click to a chatter name to init a talk.'),
+        '#options' => array('talk' => t('Direct talk')),
+      );
+      break;
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function strophe_muc_block_save($delta, $edit) {
+  variable_set('strophe_block_num_lines', (int) $edit['strophe_block_num_lines']);
+  variable_set('strophe_link_to_talk', $edit['strophe_link_to_talk']);
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function strophe_muc_block_view($delta) {
+  // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  global $user;
+  if (0 == $user->uid) {
+    return;
+  }
+  $room = new strophe_room();
+  $room->lines = variable_get('strophe_block_num_lines', 5);
+  $room->room = variable_get('strophe_block_room', 'conference') . '@conference.' . variable_get('strophe_domain', 'jabber.org');
+  static $only_once = True;
+  if ($only_once) { //settings are doubled if you use a room and a presence in a same page
+    drupal_add_js(array(
+      'strophe' => array(
+        'room' => $room->room,
+        'direct_talk_url' => base_path() . 'discussion-with/',
+        'me' => $user->name,
+      ),
+    ), array('type' => 'setting', 'scope' => JS_DEFAULT)); //[FIXME] handle multiple chat room
+    $only_once = False;
+  }
+  drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc.js');
+  switch ($delta) {
+    case 'delta-0':
+      drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc_room.js');
+      $block['subject'] = t('The chat room');
+      $block['content'] = theme('strophe_muc_room', array('chatroom' => $room, 'delta' => $delta));
+      return $block;
+    case 'delta-1':
+      $ltt = variable_get('strophe_link_to_talk', array('talk' => 0));
+      drupal_add_js(array(
+        'strophe' => array('click_to_talk' => ($ltt['talk'] !== 0)),
+      ), array('type' => 'setting', 'scope' => JS_DEFAULT));
+      drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc_presence.js');
+      $block['subject'] = t('Presence list');
+      $block['content'] = theme('strophe_muc_presence', array('chatroom' => $room));
+      return $block;
+  }
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function strophe_muc_block_OLD($op = 'list', $delta = 0, $edit = array()) {
+  // TODO Remaining code in this function needs to be moved to the appropriate new hook function.
+  include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
+}
+
+/**
+ * Implements hook_theme().
  */
 function strophe_muc_theme() {
   $path = drupal_get_path('module', 'strophe_muc');
   return array(
-  'strophe_muc_room' => array(
-    'path' => "$path/theme",
-    'template' => 'strophe_muc_room',
-  'arguments' => array(
-    'chatroom' => NULL,
-    'delta' => 0)),
-  'strophe_muc_presence' => array(
-    'path' => "$path/theme",
-    'template' => 'strophe_muc_presence',
-  'arguments' => array(
-    'chatroom' => NULL,
-    'delta' => 0)),
+    'strophe_muc_room' => array(
+      'path' => "$path/theme",
+      'template' => 'strophe_muc_room',
+      'variables' => array(
+        'chatroom' => NULL,
+        'delta' => 0,
+      ),
+    ),
+    'strophe_muc_presence' => array(
+      'path' => "$path/theme",
+      'template' => 'strophe_muc_presence',
+      'variables' => array(
+        'chatroom' => NULL,
+        'delta' => 0,
+      ),
+    ),
   );
 }
 
 /*function template_preprocess_strophe_muc_room(&$variables) {
-  drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc.js');
-}*/
+ drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc.js');
+ }*/
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function strophe_muc_menu() {
-  $items['admin/settings/strophe/muc'] = array(
+  $items['admin/config/strophe/muc'] = array(
     'description' => 'Multi User Chatroom with XMPP over HTTP',
     'title' => 'MUC with BOSH',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('strophe_muc_admin_settings'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
-    );
+  );
   return $items;
 }
 
-function strophe_muc_admin_settings() {
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function strophe_muc_admin_settings($form, &$form_state) {
   $form['strophe_default_room'] = array(
     '#type' => 'textfield',
     '#title' => 'Default room name',
     '#default_value' => variable_get('strophe_default_room', 'drupal'),
     '#description' => t("Name of the default MUC (Multi User Chatroom)"),
-    
   );
   return system_settings_form($form);
 }

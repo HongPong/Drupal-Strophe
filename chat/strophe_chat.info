@@ -1,6 +1,6 @@
 name = XMPP chatroom
 description = XMPP (Jabber) chatroom
-core = 6.x
+core = 7.x
 package = XMPP
 dependencies[] = strophe
 dependencies[] = ejabberd_auth

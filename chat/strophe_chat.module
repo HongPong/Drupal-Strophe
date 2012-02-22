@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Implementation of hook_menu
+ * Implements hook_menu().
  */
 function strophe_chat_menu() {
   $items['discussion-with/%'] = array(
@@ -10,29 +10,39 @@ function strophe_chat_menu() {
     'access callback' => 'strophe_chat_access',
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
-    );
+  );
   return $items;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function strophe_chat_init() {
   strophe_init();
   drupal_add_js(drupal_get_path('module', 'strophe') . '/chat/chat_init.js');
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function strophe_chat_page($name) {
-  $other = user_load(array('name' => $name));
-  include_once drupal_get_path('module', 'strophe') .'/strophe.inc';
+  $other = array_shift(user_load_multiple(array(), array('name' => $name)));
+  include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
   drupal_add_js(drupal_get_path('module', 'strophe') . '/chat/chat.js');
   $xmpp_other = new strophe_user($other);
   drupal_add_js(array(
     'strophe' => array(
-      'chat' => array('other' => $xmpp_other->jid))),
-    'setting');
-  return theme('chat_room', $other);
+      'chat' => array('other' => $xmpp_other->jid),
+    ),
+  ), array('type' =>
+    'setting', 'scope' => JS_DEFAULT));
+  return theme('chat_room', array('other' => $other));
 }
 
 /**
- * Implementation of hook_theme
+ * Implements hook_theme().
  */
 function strophe_chat_theme() {
   $path = drupal_get_path('module', 'strophe_chat');
@@ -40,11 +50,13 @@ function strophe_chat_theme() {
     'chat_room' => array(
       'path' => "$path/theme",
       'template' => 'chat_room',
-      'arguments' => array('other' => NULL)),
+      'variables' => array('other' => NULL),
+    ),
   );
-  
+
 }
 
-function strophe_chat_access($arg) {
+
+function strophe_chat_node_access($arg) {
   return TRUE;
 }
