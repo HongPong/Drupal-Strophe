@@ -1,13 +1,21 @@
 /*
+ * @file chat.js implements Strophe.js to drive XMPP chat
+ * Implementation of XMPP user chat over Strophe JS https://github.com/metajack/strophejs
+ * Experimental adaptation for Drupal 7.x by Dan Feidt (hongpong)
+ *
+ * Original code & comments for Drupal-Strophe by Mathieu Lecarme
+ * dans des messages :
+ * <composing xmlns="http://jabber.org/protocol/chatstates"/>
+ * <paused xmlns="http://jabber.org/protocol/chatstates"/>
+ * http://xmpp.org/extensions/xep-0045.html#enter
+ */
 
-dans des messages :
+/* JS functions here define Chatter, Room, Chat & methods.
+ * Chatter.chats, rooms, roaster, presence, connect, onConnect, handleConnect, _splitId,
+ * onPresence, onMessage, chat, groupchat. Room: room.prototype, message, handleMessage,
+ * presence, chat, exit. Chat: Chat.prototype, message, HandleMessage, chat.
+ */
 
-<composing xmlns="http://jabber.org/protocol/chatstates"/>
-
-<paused xmlns="http://jabber.org/protocol/chatstates"/>
-
-http://xmpp.org/extensions/xep-0045.html#enter
-*/
 
 debug = function(what) {
 	console.log(what);
@@ -35,23 +43,30 @@ Chatter = {
 		this.connection.connect(login, password, this.onConnect);
 	},
 
+  //onConnect 
 	onConnect: function(status) {
 		console.log('chatter', this);
 		if (status == Strophe.Status.CONNECTING) {
 			debug('Strophe is connecting.');
+			
 		} else if (status == Strophe.Status.CONNFAIL) {
 			debug('Strophe failed to connect.');
 			//$('#connect').get(0).value = 'connect';
+			
 		} else if (status == Strophe.Status.DISCONNECTING) {
 			debug('Strophe is disconnecting.');
+			
 		} else if (status == Strophe.Status.DISCONNECTED) {
 			debug('Strophe is disconnected.');
 			//$('#connect').get(0).value = 'connect';
+			
 		} else if (status == Strophe.Status.CONNECTED) {
 			debug('Strophe is connected.');
+			
 			Chatter.presence();
 			//connection.disconnect();
 		}
+		
 		Chatter.handleConnect(status);
 	},
 	
@@ -67,10 +82,12 @@ Chatter = {
 		}
 	},
 	
+	//onPresence 
 	onPresence: function(msg) {
 		var to = msg.getAttribute('to');
 		var from = msg.getAttribute('from');
 		var type = msg.getAttribute('type');
+		
 		if(type == "unavailable")
 			Chatter.roaster[from] = null;
 		else
@@ -81,6 +98,7 @@ Chatter = {
 	
 	handlePresence: function(to, from, type) { },
 	
+	//onMessage: message received
 	onMessage: function(msg) {
 		var to = msg.getAttribute('to');
 		var from = msg.getAttribute('from');
@@ -107,6 +125,8 @@ Chatter = {
 		// returning false would remove it after it finishes.
 		return true;
 	},
+	
+	//chat: send a chat message to Chatter.chats[dest].chat(msg)
 	chat: function(to, msg) {
 		var slash = to.indexOf('/');
 		var dest = null;
@@ -118,6 +138,8 @@ Chatter = {
 			Chatter.chats[dest] = new Chat(dest);
 		Chatter.chats[dest].chat(msg);
 	},
+	
+	// send a group chat to Chatter.rooms[dest]
 	groupchat: function(to, msg) {
 		var slash = to.indexOf('/');
 		var dest = null;
@@ -137,6 +159,7 @@ Chatter = {
 Room = function(room) {
 		this.room = room;
 	};
+	
 Room.prototype = {
 	 message: function(from, to, type, body) {
 		debug({ 
@@ -148,9 +171,11 @@ Room.prototype = {
 		this.handleMessage(from, to, type, body);
 	},
 	
-	handleMessage: function(from, to, type, body) { },
 	
+	
+	handleMessage: function(from, to, type, body) { },
 	presence: function() {
+	
 		Chatter.connection.send($pres({
 			to: this.room + '/' + Chatter.nickname,
 		})
@@ -158,6 +183,8 @@ Room.prototype = {
 		.cnode(Strophe.xmlElement('status', null, Chatter.status))
 		.tree());
 	},
+	
+	
 	chat: function(msg) {
 		Chatter.connection.send($msg({
 			to: this.room,
@@ -168,6 +195,7 @@ Room.prototype = {
 		.cnode(Strophe.xmlElement('body', null, msg))
 		.tree());
 	},
+	
 	exit: function() {
 		Chatter.connection.send($pres({
 			to: this.room + '/' + Chatter.nickname,
@@ -189,6 +217,7 @@ Chat.prototype = {
 			type: type,
 			body: body
 		});
+		
 		this.handleMessage(from, to, type, body);
 	},
 

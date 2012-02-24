@@ -30,13 +30,14 @@ function strophe_init() {
 }
 
 /**
+ * Implements hook_menu(). 
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
 function strophe_menu() {
   $items['admin/config/strophe'] = array(
     'description' => 'Chat with XMPP over HTTP',
-    'title' => 'Chat with bosh',
+    'title' => 'Strophe Chat with BOSH',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('strophe_admin_settings'),
     'access arguments' => array('administer site configuration'),
@@ -46,6 +47,7 @@ function strophe_menu() {
 }
 
 /**
+ * Admin settings menu. Set URL for BOSH service, XMPP domain, Client, room and bot settings
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
@@ -59,7 +61,7 @@ function strophe_admin_settings($form, &$form_state) {
   );
   $form['strophe_jabber']['strophe_bosh_url'] = array(
     '#type' => 'textfield',
-    '#title' => 'Url of BOSH service',
+    '#title' => 'URL of BOSH service',
     '#default_value' => variable_get('strophe_bosh_url', '/http-bind'),
     '#description' => t("URL of the BOSH service for jabber HTTP binding"),
   );
@@ -101,9 +103,8 @@ function strophe_admin_settings($form, &$form_state) {
  * Implements hook_block_info().
  */
 function strophe_block_info() {
-  // TODO Rename block deltas (e.g. delta-0) to readable strings.
-  $blocks['delta-0'] = array(
-    'info' => t('XMPP status'),
+  $blocks['strophe-xmpp-status'] = array(
+    'info' => t('XMPP status Strophe'),
     'cache' => BLOCK_NO_CACHE,
   );
   return $blocks;
@@ -113,9 +114,8 @@ function strophe_block_info() {
  * Implements hook_block_configure().
  */
 function strophe_block_configure($delta) {
-  // TODO Rename block deltas (e.g. delta-0) to readable strings.
   switch ($delta) {
-    case 'delta-0':
+    case 'strophe-xmpp-status':
       break;
   }
 }
@@ -129,15 +129,14 @@ function strophe_block_save($delta, $edit) { }
  * Implements hook_block_view().
  */
 function strophe_block_view($delta) {
-  // TODO Rename block deltas (e.g. delta-0) to readable strings.
   global $user;
   if (0 == $user->uid) {
     return;
   }
   switch ($delta) {
-    case 'delta-0':
+    case 'strophe-xmpp-status':
       drupal_add_js(drupal_get_path('module', 'strophe') . '/js/status.js');
-      $block['subject'] = t('Status');
+      $block['subject'] = t('XMPP Status');
       $block['content'] = theme('strophe_status');
       return $block;
   }
@@ -150,6 +149,7 @@ function strophe_block_view($delta) {
 function strophe_block_OLD($op = 'list', $delta = 0, $edit = array()) { }
 
 /**
+ * Implements hook_theme().
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */

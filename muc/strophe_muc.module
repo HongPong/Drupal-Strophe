@@ -1,4 +1,8 @@
 <?php
+/*
+ * @file strophe_muc.module multi-user chat constructor and configuration for Strophe XMPP Chat 
+ */
+
 
 class strophe_room {
   function __construct() {
@@ -64,6 +68,7 @@ function strophe_muc_block_save($delta, $edit) {
 
 /**
  * Implements hook_block_view().
+ * Builds rooms. 
  */
 function strophe_muc_block_view($delta) {
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
@@ -143,6 +148,7 @@ function strophe_muc_theme() {
  }*/
 
 /**
+ * Implements hook_menu().
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */

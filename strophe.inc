@@ -1,7 +1,13 @@
 <?php
+/**
+ * @file strophe_jid($user), builder strophe_user
+ * 
+ */
+
 include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ejabberd_auth') . '/drupalAuth.inc';
 
 /**
+ * strophe_jid($user)
  * Build a jabber id from a drupal user
  */
 function strophe_jid($user) {
