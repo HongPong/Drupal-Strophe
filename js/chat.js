@@ -1,5 +1,6 @@
 /*
  * @file chat.js implements Strophe.js to drive XMPP chat
+ *
  * Implementation of XMPP user chat over Strophe JS https://github.com/metajack/strophejs
  * Experimental adaptation for Drupal 7.x by Dan Feidt (hongpong)
  *
@@ -14,12 +15,19 @@
  * Chatter.chats, rooms, roaster, presence, connect, onConnect, handleConnect, _splitId,
  * onPresence, onMessage, chat, groupchat. Room: room.prototype, message, handleMessage,
  * presence, chat, exit. Chat: Chat.prototype, message, HandleMessage, chat.
+ * Activities are logged to console.
  */
 
 
 debug = function(what) {
 	console.log(what);
 }
+
+/* Chatter
+ * Properties: nickname, status, connection, chats, rooms, roaster.
+ * Functions: presence, connect(login, password), onConnect(status), handleConnect,
+ * _splitId, onPresence, handlePresence, onMessage, chat, groupchat
+ */
 
 Chatter = {
 	nickname: "plop",
@@ -70,6 +78,7 @@ Chatter = {
 		Chatter.handleConnect(status);
 	},
 	
+	//handleConnect handles 
 	handleConnect: function(status) { },
 
 	_splitId: function(id) {
@@ -82,7 +91,7 @@ Chatter = {
 		}
 	},
 	
-	//onPresence 
+	//onPresence calls handlePresence
 	onPresence: function(msg) {
 		var to = msg.getAttribute('to');
 		var from = msg.getAttribute('from');
@@ -93,12 +102,14 @@ Chatter = {
 		else
 			Chatter.roaster[from] = {};
 		console.log('presence', Chatter.roaster);
+		
 		Chatter.handlePresence(to, from, type);
 	},
 	
+	//handlePresence
 	handlePresence: function(to, from, type) { },
 	
-	//onMessage: message received
+	//onMessage: message received - to, from, type, body. chat or groupchat
 	onMessage: function(msg) {
 		var to = msg.getAttribute('to');
 		var from = msg.getAttribute('from');
@@ -127,6 +138,7 @@ Chatter = {
 	},
 	
 	//chat: send a chat message to Chatter.chats[dest].chat(msg)
+	// creates new Chat if [dest] is null
 	chat: function(to, msg) {
 		var slash = to.indexOf('/');
 		var dest = null;
@@ -135,11 +147,13 @@ Chatter = {
 		else
 			dest = to;
 		if(Chatter.chats[dest] == null)
+		// creates the new Chat(dest)
 			Chatter.chats[dest] = new Chat(dest);
 		Chatter.chats[dest].chat(msg);
 	},
 	
-	// send a group chat to Chatter.rooms[dest]
+	// groupchat: send a group chat to Chatter.rooms[dest]
+	// creates new Room if [dest] is null
 	groupchat: function(to, msg) {
 		var slash = to.indexOf('/');
 		var dest = null;
@@ -156,10 +170,17 @@ Chatter = {
 
 };
 
+/* Room constructor
+ *  message(from, to, type, body); handleMessage, presence, chat, 
+ * presence: Strophe send presence role="participant" message to chatroom
+ * chat: compose & send Strophe groupchat message to this.room
+ */
+
 Room = function(room) {
 		this.room = room;
 	};
-	
+
+//Room.prototype: message(from, to, type, body); handleMessage, presence, chat, 
 Room.prototype = {
 	 message: function(from, to, type, body) {
 		debug({ 
@@ -170,12 +191,12 @@ Room.prototype = {
 		});
 		this.handleMessage(from, to, type, body);
 	},
-	
-	
-	
+  
+  //handleMessage
 	handleMessage: function(from, to, type, body) { },
-	presence: function() {
 	
+	//presence: Strophe send presence role="participant" message to chatroom
+	presence: function() {
 		Chatter.connection.send($pres({
 			to: this.room + '/' + Chatter.nickname,
 		})
@@ -184,7 +205,7 @@ Room.prototype = {
 		.tree());
 	},
 	
-	
+	//chat: compose & send Strophe groupchat message to this.room
 	chat: function(msg) {
 		Chatter.connection.send($msg({
 			to: this.room,
@@ -196,6 +217,7 @@ Room.prototype = {
 		.tree());
 	},
 	
+	//exit 
 	exit: function() {
 		Chatter.connection.send($pres({
 			to: this.room + '/' + Chatter.nickname,
@@ -204,6 +226,10 @@ Room.prototype = {
 		}).tree());
 	}
 }
+
+/* Chat: Single user chat constructor. Chat.prototype, message, handleMessage, 
+ * $msg to, from: Chatter.login, type: 'chat', body.
+ */
 
 Chat = function(to) {
 	this.to = to;
