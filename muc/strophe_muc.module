@@ -1,6 +1,9 @@
 <?php
 /*
  * @file strophe_muc.module multi-user chat constructor and configuration for Strophe XMPP Chat 
+ * class strophe_room with default lines=5, room='conference'
+ * Implements hooks block info, configure, save, view. strophe_muc_theme, strophe_muc_menu, 
+ * strophe_muc_admin_settings.
  */
 
 
@@ -28,7 +31,7 @@ function strophe_muc_block_info() {
 }
 
 /**
- * Implements hook_block_configure().
+ * Implements hook_block_configure(). Sets number of chat lines/room default, direct talk settings
  */
 function strophe_muc_block_configure($delta) {
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
@@ -59,7 +62,7 @@ function strophe_muc_block_configure($delta) {
 }
 
 /**
- * Implements hook_block_save().
+ * Implements hook_block_save(). Save number of lines and link to talk.
  */
 function strophe_muc_block_save($delta, $edit) {
   variable_set('strophe_block_num_lines', (int) $edit['strophe_block_num_lines']);
@@ -68,7 +71,7 @@ function strophe_muc_block_save($delta, $edit) {
 
 /**
  * Implements hook_block_view().
- * Builds rooms. 
+ * Builds rooms. sys variables strophe_block_num_lines, strophe_block_room, strophe_domain. 
  */
 function strophe_muc_block_view($delta) {
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
@@ -76,11 +79,15 @@ function strophe_muc_block_view($delta) {
   if (0 == $user->uid) {
     return;
   }
+  // creates new strophe_room with 5 lines and named conference@jabber.org by default
+  // sys variables strophe_block_num_lines, strophe_block_room, strophe_domain
   $room = new strophe_room();
   $room->lines = variable_get('strophe_block_num_lines', 5);
   $room->room = variable_get('strophe_block_room', 'conference') . '@conference.' . variable_get('strophe_domain', 'jabber.org');
   static $only_once = True;
-  if ($only_once) { //settings are doubled if you use a room and a presence in a same page
+  
+  //settings are doubled if you use a room and a presence in a same page
+  if ($only_once) { 
     drupal_add_js(array(
       'strophe' => array(
         'room' => $room->room,
@@ -90,13 +97,20 @@ function strophe_muc_block_view($delta) {
     ), array('type' => 'setting', 'scope' => JS_DEFAULT)); //[FIXME] handle multiple chat room
     $only_once = False;
   }
+  //multi user chat js file include
   drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc.js');
+  
+  // chat room and presence list generators
   switch ($delta) {
+    //multi user chat room default options
+    // @return theme('strophe_muc_room', array('chatroom' => $room, 'delta' => $delta))
     case 'delta-0':
       drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc_room.js');
       $block['subject'] = t('The chat room');
       $block['content'] = theme('strophe_muc_room', array('chatroom' => $room, 'delta' => $delta));
       return $block;
+    //generate presence list, system var strophe_link_to_talk, click_to_talk, 
+    // @return theme('strophe_muc_presence', array('chatroom' => $room));
     case 'delta-1':
       $ltt = variable_get('strophe_link_to_talk', array('talk' => 0));
       drupal_add_js(array(
@@ -119,7 +133,7 @@ function strophe_muc_block_OLD($op = 'list', $delta = 0, $edit = array()) {
 }
 
 /**
- * Implements hook_theme().
+ * Implements hook_theme(). room: 'strophe_muc_room', presence list 'strophe_muc_presence'
  */
 function strophe_muc_theme() {
   $path = drupal_get_path('module', 'strophe_muc');
@@ -132,6 +146,7 @@ function strophe_muc_theme() {
         'delta' => 0,
       ),
     ),
+    //theme presence list
     'strophe_muc_presence' => array(
       'path' => "$path/theme",
       'template' => 'strophe_muc_presence',
@@ -148,14 +163,14 @@ function strophe_muc_theme() {
  }*/
 
 /**
- * Implements hook_menu().
+ * Implements hook_menu(). Strophe Multi User Chat w. BOSH
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
 function strophe_muc_menu() {
   $items['admin/config/strophe/muc'] = array(
     'description' => 'Multi User Chatroom with XMPP over HTTP',
-    'title' => 'MUC with BOSH',
+    'title' => 'Strophe Multi User Chat w. BOSH',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('strophe_muc_admin_settings'),
     'access arguments' => array('administer site configuration'),
@@ -165,6 +180,7 @@ function strophe_muc_menu() {
 }
 
 /**
+ * Set strophe_default_room variable, Name of the default MUC (Multi User Chatroom)
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
