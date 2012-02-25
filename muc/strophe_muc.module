@@ -1,8 +1,12 @@
 <?php
 /*
- * @file strophe_muc.module multi-user chat constructor and configuration for Strophe XMPP Chat 
- * class strophe_room with default lines=5, room='conference'
- * Implements hooks block info, configure, save, view. strophe_muc_theme, strophe_muc_menu, 
+ * @file strophe_muc.module multi-user chat constructor and configuration for Strophe XMPP Chat
+ *
+ * Drupal 7 tweeked by Dan Feidt (HongPong http://drupal.org/user/60005)
+ * Drupal 6 Developed by Mathieu Lecarme (athoune http://drupal.org/user/378820)
+ * 
+ * Class: strophe_room with default lines=5, room='conference'
+ * Implements hooks block_info, configure, save, view. strophe_muc_theme, strophe_muc_menu, 
  * strophe_muc_admin_settings.
  */
 
