@@ -124,7 +124,7 @@ function strophe_admin_settings($form, &$form_state) {
 function strophe_block_info() {
   $blocks['strophe-xmpp-status'] = array(
     'info' => t('XMPP status Strophe'),
-    'cache' => BLOCK_NO_CACHE,
+    'cache' => DRUPAL_NO_CACHE,
   );
   return $blocks;
 }
