@@ -1,3 +1,28 @@
+/**
+ * @file Compilation of JS files in Strophe package - Light XMPP Javascript-based client
+ *
+ * 
+ * Strophe is a collection of libraries for speaking the XMPP protocol. While most XMPP libraries
+ * and implementations are focused on chat-based applications, Strophe takes a grander view. It
+ * has been used to implement real-time games, notification systems, search engines, as well as
+ * traditional instant messaging.
+ * 
+ * Latest version: https://github.com/metajack/strophejs
+ * LICENSE: 
+ * Strophe.js is a JavaScript library for speaking XMPP via BOSH (XEP 124
+ * and 206).  It is licensed under the MIT license, except for the files
+ * sha1.js, base64.js and md5.js, which are licensed as public domain and
+ * BSD (see these files for details).
+ * 
+ * @see http://strophe.im/
+ * @see https://github.com/metajack/strophejs
+ * @see http://xmpp.org/about-xmpp/technology-overview/bosh/
+ */
+
+/*
+ * START Strophe library base64.js
+ */
+
 // This code was written by Tyler Akins and has been placed in the
 // public domain.  It would be nice if you left this header intact.
 // Base64 code from Tyler Akins -- http://rumkin.com
@@ -77,7 +102,17 @@ var Base64 = (function () {
     };
 
     return obj;
+    
+    
 })();
+/*
+ * END Strophe library base64.js
+ */
+ 
+/*
+ * START Strophe library md5.js
+ */
+
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -174,6 +209,15 @@ var MD5 = (function () {
         }
         return str;
     };
+
+/*
+ * END Strophe library sha1.js
+ */
+ 
+/*
+ * START Strophe library sha1.js
+ */
+
 
     /*
      * These functions implement the four basic operations the algorithm uses.
@@ -354,6 +398,17 @@ var MD5 = (function () {
 
     return obj;
 })();
+
+/*
+ * END Strophe library md5.js
+ */
+ 
+ 
+/*
+ * START Strophe library core.js
+ */
+
+
 
 /*
     This program is distributed under the terms of the MIT license.
@@ -3541,3 +3596,7 @@ if (callback) {
     window.$iq = arguments[3];
     window.$pres = arguments[4];
 });
+
+/*
+ * END Strophe library core.js
+ */
