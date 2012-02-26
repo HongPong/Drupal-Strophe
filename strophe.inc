@@ -7,8 +7,11 @@
 include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ejabberd_auth') . '/drupalAuth.inc';
 
 class strophe_user {
-  $debug = (bool)variable_get('strophe_debug', '');
+  
   function __construct($user) {
+    $debug = (bool)variable_get('strophe_debug', '');
+    if ($debug) {drupal_set_message('strophe.inc constructing strophe $user '. echo $user->name);}
+
     $this->jid = strophe_jid($user);
     $this->nickname = $user->name;
   }
@@ -22,6 +25,8 @@ class strophe_user {
  */
 function strophe_jid($user) {
   $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {drupal_set_message('strophe.inc strophe_jid for $user '. echo $user->name);}
+
   return is_string($user) ? $user : $user->name . '@'
 		. variable_get('strophe_domain', 'jabber.org') . '/'
 		. variable_get('strophe_place', 'Drupal_Strophe_Client');
