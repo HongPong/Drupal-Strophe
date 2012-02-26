@@ -19,7 +19,7 @@
 function strophe_init() {
   $debug = (bool)variable_get('strophe_debug', '');
   if ($debug) {  
-        drupal_set_message('hook init strophe module ');
+        drupal_set_message(t('hook init strophe module'));
       }
   static $only_once = True;
   if ($only_once) {
@@ -60,7 +60,7 @@ function strophe_init() {
 function strophe_menu() {
   $debug = (bool)variable_get('strophe_debug', '');
   if ($debug) {
-        drupal_set_message(t('hook menu strophemodule '));
+        drupal_set_message(t('hook menu strophe module'));
       }
   $items['admin/config/strophe'] = array(
     'description' => t('Chat with XMPP over HTTP'),
@@ -85,6 +85,12 @@ function strophe_admin_settings($form, &$form_state) {
     '#description' => t('XMPP settings'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
+  );
+  $form['strophe_jabber']['description'] = array(
+    '#title' => t('Strophe based chat module'),
+    '#description' => t('Strophe.js attmempts to connect to BOSH URL.<br />For server settings,
+    see <a href="/admin/config/ejabberd_auth">/admin/config/ejabberd_auth</a>'),
+    '#weight' => -20,
   );
   $form['strophe_jabber']['strophe_bosh_url'] = array(
     '#type' => 'textfield',
