@@ -167,8 +167,6 @@ function strophe_block_configure($delta) {
   }
 }
 
-hook view
-
 /**
  * Implements hook_block_save().
  */
