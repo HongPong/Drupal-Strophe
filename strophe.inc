@@ -10,7 +10,7 @@ class strophe_user {
   
   function __construct($user) {
     $debug = (bool)variable_get('strophe_debug', '');
-    if ($debug) {drupal_set_message('strophe.inc constructing strophe $user '. echo $user->name);}
+    if ($debug) {drupal_set_message('strophe.inc constructing strophe $user '. $user->name);}
 
     $this->jid = strophe_jid($user);
     $this->nickname = $user->name;
@@ -25,7 +25,7 @@ class strophe_user {
  */
 function strophe_jid($user) {
   $debug = (bool)variable_get('strophe_debug', '');
-  if ($debug) {drupal_set_message('strophe.inc strophe_jid for $user '. echo $user->name);}
+  if ($debug) {drupal_set_message('strophe.inc strophe_jid for $user '. $user->name);}
 
   return is_string($user) ? $user : $user->name . '@'
 		. variable_get('strophe_domain', 'jabber.org') . '/'
