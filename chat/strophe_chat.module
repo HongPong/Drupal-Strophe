@@ -13,14 +13,19 @@
 
 /**
  * Implements hook_menu().
+ * Makes a Discussion possible with discussion-with/% MENU_LOCAL_TASK
  */
 function strophe_chat_menu() {
   $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {
+        drupal_set_message(t('hook menu strophe_chat_menu'));
+      }
   $items['discussion-with/%'] = array(
     'page callback' => 'strophe_chat_page',
     'page arguments' => array(1),
     'access callback' => 'strophe_chat_access',
     'access arguments' => array(1),
+    'title' => t('XMPP Discuss with'),
     'type' => MENU_LOCAL_TASK,
   );
   return $items;
@@ -34,6 +39,9 @@ function strophe_chat_menu() {
 function strophe_chat_init() {
   $debug = (bool)variable_get('strophe_debug', '');
   strophe_init();
+  if ($debug) {
+        drupal_set_message(t('strophe_chat_init'));
+      }
   drupal_add_js(drupal_get_path('module', 'strophe') . '/chat/chat_init.js');
 }
 

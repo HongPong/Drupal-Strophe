@@ -63,12 +63,23 @@ function strophe_menu() {
         drupal_set_message(t('hook menu strophe module'));
       }
   $items['admin/config/strophe'] = array(
+  'title' => t('Strophe XMPP settings'),
+  'description' => t('Configure Strophe XMPP chat settings'),
+  'position' => 'left',
+  'weight' => -20,
+  'page callback' => 'system_admin_menu_block_page',
+  'access arguments' => array('access administration pages'),
+  'file' => 'system.admin.inc',
+  'file path' => drupal_get_path('module', 'system'),
+);
+  
+  $items['admin/config/strophe/settings'] = array(
     'description' => t('Chat with XMPP over HTTP'),
     'title' => t('Strophe Chat with BOSH'),
     'page callback' => t('drupal_get_form'),
     'page arguments' => array('strophe_admin_settings'),
     'access arguments' => array('administer site configuration'),
-    'type' => MENU_NORMAL_ITEM,
+    /*'type' => MENU_NORMAL_ITEM,*/
   );
   return $items;
 }

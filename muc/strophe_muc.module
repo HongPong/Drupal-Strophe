@@ -25,6 +25,29 @@ if ($debug) {
 }
 
 /**
+ * Implements hook_menu(). Strophe Multi User Chat w. BOSH
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function strophe_muc_menu() {
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {
+    drupal_set_message('hook strophe_muc_menu ');
+  }
+  
+  $items['admin/config/strophe/muc'] = array(
+    'description' => 'Multi User Chatroom with XMPP over HTTP',
+    'title' => 'Strophe Multi User Chat w. BOSH',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('strophe_muc_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    /*'type' => MENU_NORMAL_ITEM,*/
+  );
+  return $items;
+}
+
+
+/**
  * Implements hook_block_info().
  */
 function strophe_muc_block_info() {
@@ -200,27 +223,6 @@ function strophe_muc_theme() {
  * drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc.js');
  }*/
 
-/**
- * Implements hook_menu(). Strophe Multi User Chat w. BOSH
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
- */
-function strophe_muc_menu() {
-  $debug = (bool)variable_get('strophe_debug', '');
-  if ($debug) {
-    drupal_set_message('hook strophe_muc_menu ');
-  }
-  
-  $items['admin/config/strophe/muc'] = array(
-    'description' => 'Multi User Chatroom with XMPP over HTTP',
-    'title' => 'Strophe Multi User Chat w. BOSH',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('strophe_muc_admin_settings'),
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-  return $items;
-}
 
 /**
  * Set strophe_default_room variable, Name of the default MUC (Multi User Chatroom)
