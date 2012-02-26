@@ -3,4 +3,9 @@ description = XMPP (Jabber) multi user chatroom
 core = 7.x
 package = XMPP
 dependencies[] = strophe
-version = 0.1
+version = 7.x-1.x-dev
+files[] = strophe.module
+configure = /admin/config/strophe/muc
+scripts[] = js/chat.js
+scripts[] = js/connect.js
+

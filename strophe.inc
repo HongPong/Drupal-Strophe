@@ -17,9 +17,13 @@ class strophe_user {
     if ($debug) {
       drupal_set_message('strophe.inc constructing strophe $user ' . $user->name);
     }
-
-    $this->jid = strophe_jid($user);
-    $this->nickname = $user->name;
+    if (0 != $user->uid) {
+      $this->jid = strophe_jid($user);
+      $this->nickname = $user->name;
+    }
+    else {
+      drupal_set_message('strophe.inc tried to build strophe_user for anon UID 0 oops');
+    }
   }
 }
 

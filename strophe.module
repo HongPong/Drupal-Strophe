@@ -47,7 +47,9 @@ function strophe_init() {
     }
 
     if (0 != $user->uid) {
-      drupal_add_js(drupal_get_path('module', 'strophe') . "/js/connect.js", array('type' => 'file', 'scope' => 'footer', 'weight' => JS_THEME));
+     // call connect.js file
+      drupal_add_js(drupal_get_path('module', 'strophe') . "/js/connect.js", 
+      array('type' => 'file', 'scope' => 'footer', 'weight' => JS_THEME));
     }
   }
 }
