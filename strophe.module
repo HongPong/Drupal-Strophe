@@ -29,7 +29,7 @@ function strophe_init() {
     include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
     // attaches bosh service javascript
     // 'xmpp' JID set to strope_jid($user); passwd to ejabberd_auth_hash($user->name); nickname($user)
-    
+
     drupal_add_js(array(
       'xmpp' => array(
         'bosh_service' => variable_get('strophe_bosh_url', '/http-bind'),
@@ -40,12 +40,12 @@ function strophe_init() {
     )
     , array('type' => 'setting', 'scope' => JS_DEFAULT));
     //chat 'b64', 'md5', 'sha1', 'drupal'
-    
+
     $js = array('jquery.cookie', 'strophe', 'poem', 'init');
     foreach ($js as $j) {
       drupal_add_js(drupal_get_path('module', 'strophe') . "/js/$j.js");
     }
-    
+
     if (0 != $user->uid) {
       drupal_add_js(drupal_get_path('module', 'strophe') . "/js/connect.js", array('type' => 'file', 'scope' => 'footer', 'weight' => JS_THEME));
     }
@@ -59,13 +59,13 @@ function strophe_init() {
  */
 function strophe_menu() {
   $debug = (bool)variable_get('strophe_debug', '');
-  if ($debug) {  
-        drupal_set_message('hook menu strophemodule ');
+  if ($debug) {
+        drupal_set_message(t('hook menu strophemodule '));
       }
   $items['admin/config/strophe'] = array(
-    'description' => 'Chat with XMPP over HTTP',
-    'title' => 'Strophe Chat with BOSH',
-    'page callback' => 'drupal_get_form',
+    'description' => t('Chat with XMPP over HTTP'),
+    'title' => t('Strophe Chat with BOSH'),
+    'page callback' => t('drupal_get_form'),
     'page arguments' => array('strophe_admin_settings'),
     'access arguments' => array('administer site configuration'),
     'type' => MENU_NORMAL_ITEM,
@@ -147,8 +147,8 @@ function strophe_admin_settings($form, &$form_state) {
  */
 function strophe_block_info() {
   $debug = (bool)variable_get('strophe_debug', '');
-  if ($debug) {  
-        drupal_set_message('hook info strophe-xmpp-status block ');
+  if ($debug) {
+        drupal_set_message(t('hook info strophe-xmpp-status block '));
   }
   $blocks['strophe-xmpp-status'] = array(
     'info' => t('XMPP status Strophe'),
@@ -177,15 +177,15 @@ function strophe_block_save($delta, $edit) { }
  */
 function strophe_block_view($delta) {
   $debug = (bool)variable_get('strophe_debug', '');
-  if ($debug) {drupal_set_message('strophe_block_view');}
+  if ($debug) {drupal_set_message(t('strophe_block_view'));}
   global $user;
   if (0 == $user->uid) {
     return;
   }
   switch ($delta) {
     case 'strophe-xmpp-status':
-      if ($debug) {  
-        drupal_set_message('hook view strophe-xmpp-status block ');
+      if ($debug) {
+        drupal_set_message(t('hook view strophe-xmpp-status block '));
       }
       drupal_add_js(drupal_get_path('module', 'strophe') . '/js/status.js');
       $block['subject'] = t('XMPP Status');
@@ -207,7 +207,7 @@ function strophe_block_OLD($op = 'list', $delta = 0, $edit = array()) { }
  */
 function strophe_theme() {
   $debug = (bool)variable_get('strophe_debug', '');
-      if ($debug) {drupal_set_message('hook strophe_theme with template strophe-status');}
+      if ($debug) {drupal_set_message(t('hook strophe_theme with template strophe-status'));}
 
   $path = drupal_get_path('module', 'strophe');
   return array(

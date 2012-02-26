@@ -1,12 +1,13 @@
 <?php
 /**
- * @file chat module initializes XMPP Strophe chat functions
+ * 
+ * @file strophe_chat.module initializes XMPP Strophe chat functions
  *
  * strophe_chat_init adds /chat/chat_init.js
- * strophe_chat_page($name) builds chat 
+ * strophe_chat_page($name) builds chat
  * strophe_chat_theme themes chat
  * strophe_chat_node_access($arg) - possible hook for hook_node_access
- * 
+ *
  * @see /chat/chat.js
  */
 
@@ -26,6 +27,7 @@ function strophe_chat_menu() {
 }
 
 /**
+ * Adds chat_init.js and triggers strophe_init()
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
@@ -36,7 +38,7 @@ function strophe_chat_init() {
 }
 
 /**
- * Strophe chat page builder. 
+ * Strophe chat page builder.
  *
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
@@ -44,17 +46,18 @@ function strophe_chat_init() {
  */
 function strophe_chat_page($name) {
   $debug = (bool)variable_get('strophe_debug', '');
-  if ($debug) {  
-        drupal_set_message('hook page strophe_chat_page');
+  if ($debug) {
+        drupal_set_message(t('hook page strophe_chat_page'));
       }
   $other = array_shift(user_load_multiple(array(), array('name' => $name)));
   include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
   drupal_add_js(drupal_get_path('module', 'strophe') . '/chat/chat.js');
   // creates $xmpp_other to add another strophe_user to chat array in Strophe JS
-  // @see strophe.inc strophe_user has jid, nickname via drupal $user->name
+  // @see strophe.inc, strophe_user 
+  // has jid, nickname via drupal $user->name
   $xmpp_other = new strophe_user($other);
-  if ($debug) {  
-        drupal_set_message('new user $xmpp_other created strophe_chat_page');
+  if ($debug) {
+        drupal_set_message(t(filter_xss('new user $xmpp_other created strophe_chat_page')));
       }
   drupal_add_js(array(
     'strophe' => array(
@@ -72,7 +75,7 @@ function strophe_chat_page($name) {
 function strophe_chat_theme() {
   $debug = (bool)variable_get('strophe_debug', '');
   if ($debug) {  
-        drupal_set_message('hook theme strophe_chat_theme');
+        drupal_set_message(t('hook theme strophe_chat_theme'));
       }
   $path = drupal_get_path('module', 'strophe_chat');
   return array(
