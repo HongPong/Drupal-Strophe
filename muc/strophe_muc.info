@@ -6,6 +6,8 @@ dependencies[] = strophe
 version = 7.x-1.x-dev
 files[] = strophe.module
 configure = /admin/config/strophe/muc
-scripts[] = js/chat.js
-scripts[] = js/connect.js
+scripts[] = muc.js
+scripts[] = muc_presence.js
+scripts[] = muc_room.js
+
 
