@@ -179,6 +179,7 @@ function strophe_block_save($delta, $edit) { }
  */
 function strophe_block_view($delta) {
   $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {drupal_set_message('strophe_block_view');}
   global $user;
   if (0 == $user->uid) {
     return;
@@ -208,6 +209,8 @@ function strophe_block_OLD($op = 'list', $delta = 0, $edit = array()) { }
  */
 function strophe_theme() {
   $debug = (bool)variable_get('strophe_debug', '');
+      if ($debug) {drupal_set_message('hook strophe_theme with template strophe-status');}
+
   $path = drupal_get_path('module', 'strophe');
   return array(
     'strophe_status' => array(
