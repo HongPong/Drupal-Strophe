@@ -1,5 +1,5 @@
-Strophe.js XMPP implementation 
-Drupal 6 versio by Mathieu - http://drupal.org/user/378820
+Strophe.js XMPP implementation for Drupal
+Drupal 6 version by Mathieu - http://drupal.org/user/378820
 Drupal 7 experiment by Hongpong - http://drupal.org/user/60005
 * http://github.com/HongPong/Drupal-Strophe
 * For Drupal 7 branches:
@@ -13,8 +13,8 @@ Strophe javascript library is used for handling all javascript gears :
 http://code.stanziq.com/strophe/
 
 -- REQUIREMENTS --
-XMPP server with http-binding is the same domain as the drupal web site.
-Developpement is done with Ejabberd and its modules
+XMPP server with http-binding is the same domain as the Drupal web site.
+Development is done with Ejabberd and its modules:
  * mod_muc
  * mod_http_bind
 
@@ -23,11 +23,12 @@ http://github.com/athoune/Drupal-Ejabberd-Auth
 
 -- CONFIGURATION --
 
-You have to choose a domain for your xmpp server. It may be a real domain, if you wont to use 
-classical xmpp client, or a fake one if you only want to use it inside Drupal.
+You have to choose a domain for your xmpp server. It may be a real domain, if you 
+want to use classical xmpp client, or a fake one if you only want to use it 
+inside Drupal.
 
  * Ejabberd
-Install and configure an Ejabberd with drupal authentification.
+Install and configure an Ejabberd with Drupal authentification.
 
 Set your domain. Here, I use a fake domain : tchat.tld
 
@@ -51,7 +52,9 @@ Configure http_bind:
 
 ------------------------------------------------------>8
 
-And load the module in the right place, in the modules block, near the end of the config file.
+And load the module in the right place, in the modules block, near the end of the 
+config file.
+
 Be careful with the ending comma.
 
 8<------------------------------------------------------
@@ -60,7 +63,8 @@ Be careful with the ending comma.
 
 ------------------------------------------------------>8
 
-Restart ejabberd. If you try to connect with a web browser to http://myserver:5280/http-bind
+Restart ejabberd. If you try to connect with a web browser to 
+http://myserver:5280/http-bind
 you should see :
 
 8<------------------------------------------------------
@@ -72,8 +76,8 @@ An implementation of XMPP over BOSH (XEP-0206)
 http bind may not work with packaged version, use the source to compile a fresh ejabberd.
 
  * Web server
-Use proxy on your web server (apache, lighttpd ...) to provide /http-bind in the same address 
-as your website. Be careful with open proxy.
+Use proxy on your web server (apache, lighttpd ...) to provide /http-bind in the same 
+address as your website. Be careful with open proxy.
 
  * Apache2
 Here is an Apache2 configuration example :
@@ -128,24 +132,25 @@ For now, you have to use clean url.
 
 -- USAGE --
 
-Strophe use sub modules: strophe_muc and strophe_chat. Muc is for Multi User Chatroom, and 
-strophe_chat is a one to one discussion. With Ejabberd external auth, you don't have any user, so, 
-every rosters are empty. 
+Strophe use sub modules: strophe_muc and strophe_chat. Muc is for Multi User Chatroom, 
+and strophe_chat is a one to one discussion. With Ejabberd external auth, you don't 
+have any user, so, every rosters are empty. 
 
-For handling user presence, a simple chatroom is used, every user join this room, and you can 
-display it or just use it for connection status.
+For handling user presence, a simple chatroom is used, every user join this room, and
+you can display it or just use it for connection status.
 
-The strophe_MUC module provides two blocks, one for the presence list, the other for the chatroom.
-If you want, presence list can be used as a starting point for a private discussion.
+The strophe_MUC module provides two blocks, one for the presence list, the other for 
+the chatroom. If you want, presence list can be used as a starting point for a 
+private discussion.
 
-The strophe_Chat module provide one page, for a one to one discussion. The easiest way is to use 
-presence list to trigger a discussion.
+The strophe_Chat module provide one page, for a one to one discussion. The easiest 
+way is to use presence list to trigger a discussion.
 
 -- FRAMEWORK --
-Strophe module is not a gtalk clone, it's a framework with usable features. You can use the power 
-of xmpp and javascript with it. Event or query can be send throw XMPP. I click somewhere on my 
-browser, something will happening on my correspondent's browser. I can ask query, and handling 
-answer too.
+Strophe module is not a gtalk clone, it's a framework with usable features. You can use 
+the power of xmpp and javascript with it. Event or query can be send throw XMPP. I 
+click somewhere on my browser, something will happening on my correspondent's browser. 
+I can ask query, and handling answer too.
 
 The Strophe Javascript framework was build to handle chess party.
 
