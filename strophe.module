@@ -8,6 +8,7 @@
  *
  * uses ejabberd_auth drupalAuth.inc 
  *
+ * system variable strophe_debug when = 1 displays many status updates and watchdog entries 
  * @see ejabberd_auth
  */
 
@@ -16,6 +17,10 @@
  * connects to xmpp - passwd to ejabberd_auth_hash($user->name); nickname($user)
  */
 function strophe_init() {
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('hook init strophe module ');
+      }
   static $only_once = True;
   if ($only_once) {
     $only_once = False;
@@ -24,6 +29,7 @@ function strophe_init() {
     include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
     // attaches bosh service javascript
     // 'xmpp' JID set to strope_jid($user); passwd to ejabberd_auth_hash($user->name); nickname($user)
+    
     drupal_add_js(array(
       'xmpp' => array(
         'bosh_service' => variable_get('strophe_bosh_url', '/http-bind'),
@@ -52,6 +58,10 @@ function strophe_init() {
  * @see http://drupal.org/node/1354
  */
 function strophe_menu() {
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('hook menu strophemodule ');
+      }
   $items['admin/config/strophe'] = array(
     'description' => 'Chat with XMPP over HTTP',
     'title' => 'Strophe Chat with BOSH',
@@ -78,19 +88,19 @@ function strophe_admin_settings($form, &$form_state) {
   );
   $form['strophe_jabber']['strophe_bosh_url'] = array(
     '#type' => 'textfield',
-    '#title' => 'URL of BOSH service',
+    '#title' => t('URL of BOSH service'),
     '#default_value' => variable_get('strophe_bosh_url', '/http-bind'),
     '#description' => t("URL of the BOSH service for Jabber HTTP binding"),
   );
   $form['strophe_jabber']['strophe_domain'] = array(
     '#type' => 'textfield',
-    '#title' => 'Domain for XMPP',
+    '#title' => t('Domain for XMPP'),
     '#default_value' => variable_get('strophe_domain', 'jabber.org'),
     '#description' => t("The XMPP server domain Drupal connects to"),
   );
   $form['strophe_jabber']['strophe_place'] = array(
     '#type' => 'textfield',
-    '#title' => 'Place for XMPP',
+    '#title' => t('Place for XMPP'),
     '#default_value' => variable_get('strophe_place', 'Drupal_Strophe_Client'),
     '#description' => t("Place/Client name: XMPP user can be connected more than one time
     with different place (the name of the client, or the name of the place where is the chatter is)"),
@@ -104,17 +114,31 @@ function strophe_admin_settings($form, &$form_state) {
   );
   $form['strophe_bot']['strophe_bot_user'] = array(
     '#type' => 'textfield',
-    '#title' => 'Default room name',
+    '#title' => t('Strophe bot user'),
     '#default_value' => variable_get('strophe_bot_user', 'admin'),
     '#description' => t("Bot user, should have admin access control in ejabberd.cfg 
     (usually /etc/ejabberd.cfg)"),
   );
   $form['strophe_bot']['strophe_bot_name'] = array(
     '#type' => 'textfield',
-    '#title' => 'Default room name',
+    '#title' => t('Strophe Default room name'),
     '#default_value' => variable_get('strophe_bot_name', 'The bot'),
     '#description' => t("Name of the bot"),
   );
+  $form['strophe_dev'] = array(
+    '#title' => t('Strophe / Ejabberd Developer settings'),
+    '#type' => 'fieldset',
+    '#description' => t(''),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
+  $form['strophe_dev']['strophe_debug'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Strophe general debug mode'),
+    '#default_value' => variable_get('strophe_debug', '0'),
+    '#description' => t("1 = debug, 0 = off / Fill your watchdog & message windows with updates for great dev justice"),
+  );
+  
   return system_settings_form($form);
 }
 
@@ -122,6 +146,10 @@ function strophe_admin_settings($form, &$form_state) {
  * Implements hook_block_info(). Don't cache strophe-xmpp-status.
  */
 function strophe_block_info() {
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('hook info strophe-xmpp-status block ');
+  }
   $blocks['strophe-xmpp-status'] = array(
     'info' => t('XMPP status Strophe'),
     'cache' => DRUPAL_NO_CACHE,
@@ -139,6 +167,8 @@ function strophe_block_configure($delta) {
   }
 }
 
+hook view
+
 /**
  * Implements hook_block_save().
  */
@@ -148,12 +178,16 @@ function strophe_block_save($delta, $edit) { }
  * Implements hook_block_view(). Loads strophe/js/status.js if block enabled
  */
 function strophe_block_view($delta) {
+  $debug = (bool)variable_get('strophe_debug', '');
   global $user;
   if (0 == $user->uid) {
     return;
   }
   switch ($delta) {
     case 'strophe-xmpp-status':
+      if ($debug) {  
+        drupal_set_message('hook view strophe-xmpp-status block ');
+      }
       drupal_add_js(drupal_get_path('module', 'strophe') . '/js/status.js');
       $block['subject'] = t('XMPP Status');
       $block['content'] = theme('strophe_status');
@@ -173,6 +207,7 @@ function strophe_block_OLD($op = 'list', $delta = 0, $edit = array()) { }
  * @see http://drupal.org/node/1354
  */
 function strophe_theme() {
+  $debug = (bool)variable_get('strophe_debug', '');
   $path = drupal_get_path('module', 'strophe');
   return array(
     'strophe_status' => array(

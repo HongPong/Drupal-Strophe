@@ -1,3 +1,14 @@
+<?php
+/**
+ * @file chat room theme, submit for #discussion-doTchat
+ *
+ *
+ */
+$debug = (bool)variable_get('strophe_debug', '');
+if ($debug) {  
+        drupal_set_message('chat_room tpl php with $other->name' . echo $other->name ' . ');
+      }
+?>
 <h2>Discussion with <?php echo $other->name; ?></h2>
 
 <form id="discussion-form">

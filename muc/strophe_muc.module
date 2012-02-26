@@ -12,7 +12,12 @@
 
 
 class strophe_room {
+
   function __construct() {
+    $debug = (bool)variable_get('strophe_debug', '');
+if ($debug) {  
+        drupal_set_message('strophe_room constructing');
+      }
     $this->lines = 5;
     $this->room = 'conference';
   }
@@ -23,6 +28,11 @@ class strophe_room {
  */
 function strophe_muc_block_info() {
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
+    $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('hook strophe_muc_block_info');
+      }
+  
   $blocks['delta-0'] = array(
     'info' => t('Multi User Chat room'),
     'cache' => BLOCK_NO_CACHE,
@@ -39,6 +49,10 @@ function strophe_muc_block_info() {
  */
 function strophe_muc_block_configure($delta) {
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('hook strophe_muc_block_configure');
+      }
   switch ($delta) {
     case 'delta-0':
       $form['strophe_block_num_lines'] = array(
@@ -69,6 +83,10 @@ function strophe_muc_block_configure($delta) {
  * Implements hook_block_save(). Save number of lines and link to talk.
  */
 function strophe_muc_block_save($delta, $edit) {
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('strophe_muc_block_save ');
+      }
   variable_set('strophe_block_num_lines', (int) $edit['strophe_block_num_lines']);
   variable_set('strophe_link_to_talk', $edit['strophe_link_to_talk']);
 }
@@ -78,6 +96,10 @@ function strophe_muc_block_save($delta, $edit) {
  * Builds rooms. sys variables strophe_block_num_lines, strophe_block_room, strophe_domain. 
  */
 function strophe_muc_block_view($delta) {
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('hook strophe_muc_block_view');
+      }
   // TODO Rename block deltas (e.g. delta-0) to readable strings.
   global $user;
   if (0 == $user->uid) {
@@ -92,6 +114,7 @@ function strophe_muc_block_view($delta) {
   
   //settings are doubled if you use a room and a presence in a same page
   if ($only_once) { 
+    if ($debug) {drupal_set_message('strophe_muc only_once=true');}
     drupal_add_js(array(
       'strophe' => array(
         'room' => $room->room,
@@ -109,6 +132,8 @@ function strophe_muc_block_view($delta) {
     //multi user chat room default options
     // @return theme('strophe_muc_room', array('chatroom' => $room, 'delta' => $delta))
     case 'delta-0':
+        if ($debug) {drupal_set_message('multi user chat room block_view');}
+
       drupal_add_js(drupal_get_path('module', 'strophe') . '/muc/muc_room.js');
       $block['subject'] = t('The chat room');
       $block['content'] = theme('strophe_muc_room', array('chatroom' => $room, 'delta' => $delta));
@@ -116,6 +141,8 @@ function strophe_muc_block_view($delta) {
     //generate presence list, system var strophe_link_to_talk, click_to_talk, 
     // @return theme('strophe_muc_presence', array('chatroom' => $room));
     case 'delta-1':
+          if ($debug) {drupal_set_message('multi user chat presence block_view');}
+
       $ltt = variable_get('strophe_link_to_talk', array('talk' => 0));
       drupal_add_js(array(
         'strophe' => array('click_to_talk' => ($ltt['talk'] !== 0)),
@@ -140,6 +167,8 @@ function strophe_muc_block_OLD($op = 'list', $delta = 0, $edit = array()) {
  * Implements hook_theme(). room: 'strophe_muc_room', presence list 'strophe_muc_presence'
  */
 function strophe_muc_theme() {
+  $debug = (bool)variable_get('strophe_debug', '');
+      if ($debug) {drupal_set_message('hook strophe_muc_theme');}
   $path = drupal_get_path('module', 'strophe_muc');
   return array(
     'strophe_muc_room' => array(
@@ -172,6 +201,11 @@ function strophe_muc_theme() {
  * @see http://drupal.org/node/1354
  */
 function strophe_muc_menu() {
+    $debug = (bool)variable_get('strophe_debug', '');
+if ($debug) {  
+        drupal_set_message('hook strophe_muc_menu ');
+      }
+  
   $items['admin/config/strophe/muc'] = array(
     'description' => 'Multi User Chatroom with XMPP over HTTP',
     'title' => 'Strophe Multi User Chat w. BOSH',
@@ -189,6 +223,10 @@ function strophe_muc_menu() {
  * @see http://drupal.org/node/1354
  */
 function strophe_muc_admin_settings($form, &$form_state) {
+  $debug = (bool)variable_get('strophe_debug', '');
+  if ($debug) {  
+        drupal_set_message('hook strophe_muc_admin_settings');
+      }
   $form['strophe_default_room'] = array(
     '#type' => 'textfield',
     '#title' => 'Default room name',
