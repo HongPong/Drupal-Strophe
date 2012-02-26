@@ -59,11 +59,11 @@ function strophe_muc_block_info() {
   
   $blocks['delta-0'] = array(
     'info' => t('Multi User Chat room'),
-    'cache' => BLOCK_NO_CACHE,
+    'cache' => DRUPAL_NO_CACHE,
   );
   $blocks['delta-1'] = array(
     'info' => t('Connected chatters'),
-    'cache' => BLOCK_NO_CACHE,
+    'cache' => DRUPAL_NO_CACHE,
   );
   return $blocks;
 }
