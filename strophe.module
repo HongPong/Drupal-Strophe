@@ -41,7 +41,7 @@ function strophe_init() {
     , array('type' => 'setting', 'scope' => JS_DEFAULT));
     //chat 'b64', 'md5', 'sha1', 'drupal'
 
-    $js = array('jquery.cookie', 'strophe', 'poem', 'init');
+    $js = array('strophe', 'poem', 'init');
     foreach ($js as $j) {
       drupal_add_js(drupal_get_path('module', 'strophe') . "/js/$j.js");
     }

@@ -1,5 +1,7 @@
 /**
  * @namespace poem namespce
+ * @todo for D7:
+ * needs Drupal.behaviors.myModuleHeaders = { attach: function(context, settings) {
  */
 var poem = {
 	 /**

@@ -10,7 +10,6 @@ configure = /admin/config/strophe/settings
 scripts[] = js/strophe.js
 scripts[] = js/chat.js
 scripts[] = js/connect.js
-scripts[] = js/jquery.cookie.js
 scripts[] = js/poem.js
 scripts[] = js/status.js
 scripts[] = js/init.js
