@@ -6,7 +6,7 @@
 
 (function ($) {
 
-Drupal.behaviors.Strophe.poem.behaviors.append = {
+poem.behaviors.append = {
 	
 	var status = $("#strophe-status");
 	var st = xmpp.show();
@@ -18,8 +18,8 @@ Drupal.behaviors.Strophe.poem.behaviors.append = {
 		cpt++;
 	});
 	status.change(function() {
-		Drupal.behaviors.Strophe.xmpp.show(this.options[this.selectedIndex].value);
-		Drupal.behaviors.Strophe.xmpp.presence();
-	  Drupal.behaviors.Strophe.xmpp.flush();
+		xmpp.show(this.options[this.selectedIndex].value);
+		xmpp.presence();
+	  xmpp.flush();
 	});
 })(jQuery);
