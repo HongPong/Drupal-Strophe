@@ -1,4 +1,13 @@
-poem.behaviors.append(function() {
+/**
+ * @file appends xmpp status updates
+ * jquery selector #strophe-status
+ * in D6 was poem.behaviors.append(function() {
+ */
+
+(function ($) {
+
+Drupal.behaviors.Strophe.poem.behaviors.append = {
+	
 	var status = $("#strophe-status");
 	var st = xmpp.show();
 	var cpt = 0;
@@ -9,8 +18,8 @@ poem.behaviors.append(function() {
 		cpt++;
 	});
 	status.change(function() {
-		xmpp.show(this.options[this.selectedIndex].value);
-		xmpp.presence();
-		xmpp.flush();
+		Drupal.behaviors.Strophe.xmpp.show(this.options[this.selectedIndex].value);
+		Drupal.behaviors.Strophe.xmpp.presence();
+	  Drupal.behaviors.Strophe.xmpp.flush();
 	});
-});
+})(jQuery);

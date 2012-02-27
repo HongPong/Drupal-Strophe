@@ -1,11 +1,21 @@
 /**
- * @namespace poem namespce
+ * @namespace poem namespace
  * @todo for D7:
  * needs Drupal.behaviors.myModuleHeaders = { attach: function(context, settings) {
+ *
+ * methods:
+ * poem.log, poem.rawInput, poem.rawOutput, poem.append, 
+ * poem.status, poem.Jid, poem.Jid.prototype, poem.XMPP
+ * poem.XMPP: main stanza generator for Strophe
+ * - __iq
+ * - __presence
+ * - __message
+ * 
+ *
  */
 var poem = {
 	 /**
-	 * simple logger
+	 * log: simple logger
 	 */
 	log: function(what) {
 		if(typeof console != 'undefined') {
@@ -19,14 +29,14 @@ var poem = {
 		poem.log('SENT: ' + data);
 	},
 	/**
-	 * append helper for Array class
+	 * append: helper for Array class
 	 * adding a method Array.protoype break silly code wich iterate over array
 	 */
 	append: function(haystack, needle) {
 		haystack[haystack.length] = needle;
 		return haystack;
 	},
-	/*
+	/**
 	 * available states for show
 	 */
 	AWAY: 'away',
@@ -35,6 +45,7 @@ var poem = {
 	XA: 'xa',
 	_status : {}
 };
+
 poem._status[Strophe.Status.CONNECTING] = 'connecting';
 poem._status[Strophe.Status.CONNFAIL] = 'connfail';
 poem._status[Strophe.Status.AUTHENTICATING] = 'authenticating';
@@ -45,7 +56,7 @@ poem._status[Strophe.Status.CONNECTED] = 'connected';
 poem._status[Strophe.Status.ATTACHED] = 'attached';
 
 /**
- * Helper for connection status
+ * poem.status(status): Helper for connection status
  * return a name from a status
  */
 poem.status = function(status) {
@@ -71,6 +82,11 @@ poem.Jid = function(txt) {
 		}
 	}
 };
+
+/**
+ * poem.Jid.prototype defines properties and methods of Jid Strophe object
+ * methods: toString, isRoom, roomName
+ */
 poem.Jid.prototype = {
 	toString: function() {
 		return this.user + '@' + this.domain + '/' + this.place;
@@ -94,6 +110,8 @@ poem.Jid.prototype = {
  * @param login Login
  * @param passwd Password
  * @param nickname Nickname
+ * methods for: __iq, __presence, __message
+ * handlePresence, handleConnect, handleGroupChat, alterPresence
  */
 poem.XMPP = function(service, login, passwd, nickname) {
 	this.jid = new poem.Jid(login);
@@ -237,6 +255,8 @@ poem.XMPP = function(service, login, passwd, nickname) {
 		//poem.log(['the rooms', pres.jid.isRoom(), pres.jid.roomName(), pres.jid, this._room, this._room[pres.jid.roomName()]]);
 		this._presence[pres.from] = pres;
 	});
+	
+	// handleConnect: set cookie if connected. Log if attached.
 	this.handleConnect(function(status) {
 		if(Strophe.Status.ATTACHED == status) {
 			poem.log('Attached');
@@ -259,11 +279,13 @@ poem.XMPP = function(service, login, passwd, nickname) {
 		}
 		return true;
 	});
+	// handleGroupChat
 	this.handleGroupChat(function(message) {
 		if(message.from_jid.isRoom()) {
 			this._room[message.from_jid.roomName()].triggerMessage(message);
 		}
 	});
+	// alterPresence
 	this.alterPresence(function(presence) {
 		var status = this.status();
 		if(status != null) {
@@ -278,6 +300,7 @@ poem.XMPP = function(service, login, passwd, nickname) {
 		presence.up();
 		return presence;
 	});
+	// another alterPresence
 	this.alterPresence(function(presence) {
 		presence.c('drupal', {}).t('plop');
 		return presence;
@@ -291,6 +314,14 @@ poem.XMPP = function(service, login, passwd, nickname) {
 function $iqr(iq) {
 	return $iq({id : iq.getAttribute('id'), to: iq.getAttribute('from'), type: 'result'});
 }
+
+/**
+ * poem.XMPP.prototype defines properties and methods of XMPP Strophe object
+ * methods: handleConnect, handlePreConnect, handlePresense, handleChat, handleGroupChat,
+ *   handleAnyChat, handleServerMessage, handleHeadline, handleNSHeadline, handleNSIQ,
+ *   handleIQ, alterPresence, connect, room, chat, event(deprecated), presence, status,
+ *   show, roster(deprecated), vcard, flush.
+ */
 
 poem.XMPP.prototype = {
 	handleConnect: function(h) {
@@ -375,7 +406,7 @@ poem.XMPP.prototype = {
 		poem.log("Status: " +status);
 	},*/
 	/**
-	 * Get a room, build it if needed
+	 * room: Get a room, build it if needed
 	 */
 	room: function(room) {
 		if(this._room[room] == null) {
@@ -384,7 +415,7 @@ poem.XMPP.prototype = {
 		return this._room[room];
 	},
 	/**
-	 * talk to someone
+	 * chat: talk to someone
 	 */
 	chat: function(to, blabla) {
 		var msg = $msg({
@@ -396,7 +427,7 @@ poem.XMPP.prototype = {
 		this.connection.send(msg.tree());
 	},
 	/**
-	 * @deprecated
+	 * event: @deprecated
 	 */
 	event: function(to, blabla) {
 		this.connection.send(
@@ -406,7 +437,7 @@ poem.XMPP.prototype = {
 		);
 	},
 	/**
-	 * Send presence
+	 * presence: Send presence
 	 */
 	presence: function() {
 		var that = this;
@@ -436,7 +467,7 @@ poem.XMPP.prototype = {
 		}
 	},
 	/**
-	 * show or set status
+	 * status: show or set status
 	 */
 	status: function(msg) {
 		if(typeof msg == 'undefined') {
@@ -447,7 +478,7 @@ poem.XMPP.prototype = {
 		}
 	},
 	/**
-	 * Show or set show
+	 * show: Show or set show
 	 * available states are poem.AWAY, poem.CHAT, poem.DND, poem.XA
 	 */
 	show: function(state) {
@@ -459,7 +490,7 @@ poem.XMPP.prototype = {
 		}
 	},
 	/**
-	 * @deprecated
+	 * roster: @deprecated
 	 */
 	roster: function() {
 		this.connection.sendIQ(
@@ -472,6 +503,10 @@ poem.XMPP.prototype = {
 			},
 			10000);
 	},
+	/**
+	 * vcard: Sends a vcard {xmlns: 'vcard-temp', version: "2.0", prodid: 
+	 * "-//HandGen//NONSGML vGen v1.0//EN"}
+	 */
 	vcard: function(name) {
 		/*
 		<iq type="set" id="aacca" >
@@ -491,12 +526,16 @@ poem.XMPP.prototype = {
 			10000
 		);
 	},
+	/**
+	 * flush: triggers this.connection.flush
+	 */
 	flush: function() {
 		this.connection.flush();
 	}
 };
 
 /**
+ * Constructor poem.Room(tchat, room, pseudo)
  * @class A chat room
  * @constructor
  */
@@ -531,8 +570,15 @@ poem.Room = function(tchat, room, pseudo) {
 	//[TODO] handle remove
 };
 
+/**
+ * poem.Room.prototype defines properties and methods of Room Strophe object
+ * methods: presence, message, event(deprecated), handlePresence, triggerPresence, handleAvailable
+ *   handleNotAvailable, handleMessage, triggerMessage
+ *
+ */
+
 poem.Room.prototype = {
-	/** Send presence to that room*/
+	/** presence: Send presence to that room */
 	presence: function() {
 		var that = this;
 		$(window).unload(function(evt) {
@@ -554,7 +600,7 @@ poem.Room.prototype = {
 			.tree());*/
 		poem.log(this.room + ' is here');
 	},
-	/** send message to that room */
+	/** message: send message to that room */
 	message: function(blabla) {
 		var msg = $msg({
 				to: this.room,
@@ -564,7 +610,7 @@ poem.Room.prototype = {
 		this.connection.send(msg.tree());
 	},
 	/**
-	 * send an arbitrary event to that room 
+	 * event: send an arbitrary event to that room 
 	 * @deprecated
 	 */
 	event: function(blabla) {
@@ -574,9 +620,10 @@ poem.Room.prototype = {
 			.c('event',{})
 			.t(blabla).tree());
 	},
-	/** register a new presence handler for that room 
+	/** 
+	 * handlePresence: register a new presence handler for that room 
 	 * the handler will receive the presence object
-	*/
+	 */
 	handlePresence: function(handler) {
 		this._presence = poem.append(this._presence, handler.bind(this));
 	},
@@ -604,6 +651,13 @@ poem.Room.prototype = {
 poem.Behaviors = function(){
 	this.behaviors = [];
 };
+
+/**
+ * poem.behaviors.prototype defines append & trigger functions of behaviors
+ * methods: append, trigger
+ *
+ */
+
 poem.Behaviors.prototype = {
 	/**
 	 * Append a new behaviors to the poem stack
@@ -617,7 +671,8 @@ poem.Behaviors.prototype = {
 		}
 	}
 };
+
 /**
- * all behaviors will be triggered, juste before connection
+ * all behaviors will be triggered, just before connection
  */
 poem.behaviors = new poem.Behaviors();

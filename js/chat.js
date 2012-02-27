@@ -11,7 +11,7 @@
  * http://xmpp.org/extensions/xep-0045.html#enter
  */
 
-/* JS functions here define Chatter, Room, Chat & methods.
+/* JS functions here define debug, Chatter, Room, Chat & methods.
  * Chatter.chats, rooms, roaster, presence, connect, onConnect, handleConnect, _splitId,
  * onPresence, onMessage, chat, groupchat. Room: room.prototype, message, handleMessage,
  * presence, chat, exit. Chat: Chat.prototype, message, HandleMessage, chat.
@@ -27,6 +27,7 @@ debug = function(what) {
  * Properties: nickname, status, connection, chats, rooms, roaster.
  * Functions: presence, connect(login, password), onConnect(status), handleConnect,
  * _splitId, onPresence, handlePresence, onMessage, chat, groupchat
+ * D6 was Chatter
  */
 
 Chatter = {

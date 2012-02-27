@@ -11,6 +11,10 @@
 include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ejabberd_auth') . '/drupalAuth.inc';
 
 class strophe_user {
+  /**
+   * constructor makes $user with $this->jid and $this->nicknme
+   *
+   */
   
   function __construct($user) {
     $debug = (bool)variable_get('strophe_debug', '');

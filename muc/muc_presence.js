@@ -1,3 +1,8 @@
+/**
+ * @file appends chats on direct talk urls multi user chat
+ *
+ */
+
 poem.behaviors.append(function(){
     var directTalk = function(who) {
         poem.log('id', Drupal.settings.strophe.direct_talk_url + who);

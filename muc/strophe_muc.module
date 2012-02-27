@@ -141,6 +141,7 @@ function strophe_muc_block_view($delta) {
     if ($debug) {
       drupal_set_message(t('strophe_muc only_once=true'));
     }
+    // adds to Drupal.settings.strophe.room, strophe.direct_talk_url, strophe.me 
     drupal_add_js(array(
       'strophe' => array(
         'room' => $room->room,
