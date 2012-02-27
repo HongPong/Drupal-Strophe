@@ -22,7 +22,7 @@
 (function ($) {
 Drupal.behaviors.Strophe = {
   attach: function (context, settings) {
-    Drupal.behaviors.Strophe.poem.behaviors.trigger();
-	  Drupal.behaviors.Strophe.xmpp.connect();
+    poem.behaviors.trigger();
+	  xmpp.connect();
   }
 })(jQuery);
