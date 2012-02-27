@@ -1,6 +1,6 @@
 /**
  * @file Anonymous functions for adding to chat
- * #discussion: ID Jquery selector for discussion
+ *
  * Logs "Now, I'm cool when things are cool"
  * TIMING: animation speed variable, [default 500ms]
  *
@@ -11,6 +11,9 @@
  * xmpp.handleConnect: trigger this.presence(other) upon connected
  * submit: post sends post(xmpp.nickname, msg), xmpp.chat(other.msg)
  * discussion-event: click logs event xmpp.event(other, $(this).text() )
+ * Jquery selectors: #discussion
+ *   #discussion-msg, #discussion-form, .discussion-event
+ *
  */
 
 var __cool = true;
@@ -26,7 +29,7 @@ poem.behaviors.append(function(){
 	var other = Drupal.settings.strophe.chat.other;
 	var head = $('<div style="font-size: 36px;position: relative; z-index:20;">☠</div>');
 	var TIMING = 500; // timing is stepping of animation
-	
+
 	//call XMPP handleHeadline to process message/event
 	xmpp.handleHeadline('event', function(message, event){
 		poem.log(event.textContent);
@@ -43,14 +46,14 @@ poem.behaviors.append(function(){
 			.css('left', parseInt(t[0], 10))
 			.css('top',parseInt(t[1], 10));*/
 	});
-	
+
 	// xmpp.handleServerMessage logs and alerts msg.body.textContent
 	xmpp.handleServerMessage(function(msg){
 		poem.log(msg);
 		alert(msg.body.textContent);
 	});
-	
-	// post(who, what) appends li b styled who, what to chat update
+
+	// post(who, what): appends li b styled who, what to chat update
 	function post(who, what) {
 		$('#discussion').append(
 			$('<li>')
@@ -58,25 +61,25 @@ poem.behaviors.append(function(){
 				.append(': ' + what)
 		);
 	}
-	
-	// xmpp.handleChat log you have received a message
+
+	// xmpp.handleChat: log you have received a message
 	xmpp.handleChat(function(msg){
 		poem.log('je recois un message');
 		poem.log(msg);
 		// if msg.nick is not null parse msg.nick, msg.body
 		post((msg.nick != null) ? msg.nick : msg.from.split('@')[0], msg.body);
 	});
-	
-	//xmpp.handleConnect trigger this.presence(other) upon connected
+
+	//xmpp.handleConnect: trigger this.presence(other) upon connected
 	xmpp.handleConnect(function(status){
 		if(Strophe.Status.CONNECTED == status){
 			this.presence(other);
 		}
 	});
-	
-	// discussion_poz offset of #discussion ID
+
+	// discussion_poz: offset of #discussion ID
 	var discussion_poz = $('#discussion').offset();
-	
+
 	//timing loop thing?
 	$('#discussion').before(head).mousemove(function(evt) {
 		poem.log(__cool);
@@ -86,7 +89,7 @@ poem.behaviors.append(function(){
 			setTimeout("waitAlittle()", TIMING);
 		}
 	});
-	
+
   //submit: post sends post(xmpp.nickname, msg), xmpp.chat(other.msg)
 	$('#discussion-form').submit(function(){
 		var msg = $('#discussion-msg').get(0).value;
@@ -95,7 +98,7 @@ poem.behaviors.append(function(){
 		$('#discussion-msg').get(0).value = "";
 		return false;
 	});
-	
+
 	//discussion-event: click logs event xmpp.event(other, $(this).text() ),
 	// @return FALSE
 	$('.discussion-event').click(function(){

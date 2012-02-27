@@ -1,4 +1,4 @@
-/*
+/**
  * @file chat.js implements Strophe.js to drive XMPP chat
  *
  * Implementation of XMPP user chat over Strophe JS https://github.com/metajack/strophejs
@@ -11,25 +11,25 @@
  * http://xmpp.org/extensions/xep-0045.html#enter
  */
 
-/* JS functions here define debug, Chatter, Room, Chat & methods.
+/**
+ * JS functions here define debug, Chatter, Room, Chat & methods.
  * Chatter.chats, rooms, roaster, presence, connect, onConnect, handleConnect, _splitId,
  * onPresence, onMessage, chat, groupchat. Room: room.prototype, message, handleMessage,
  * presence, chat, exit. Chat: Chat.prototype, message, HandleMessage, chat.
  * Activities are logged to console.
  */
 
-
 debug = function(what) {
 	console.log(what);
 }
 
-/* Chatter
+/** 
+ * Chatter
  * Properties: nickname, status, connection, chats, rooms, roaster.
  * Functions: presence, connect(login, password), onConnect(status), handleConnect,
  * _splitId, onPresence, handlePresence, onMessage, chat, groupchat
- * D6 was Chatter
+ *
  */
-
 Chatter = {
 	nickname: "plop",
 	status: "Strophe rulez",
@@ -37,13 +37,13 @@ Chatter = {
 	chats: {},
 	rooms: {},
 	roaster: {},
-	
+
 	//send presence
 	presence: function() {
 		this.connection.send($pres().tree());
 		//[TODO] send presence to rooms
 	},
-	
+
 	//connection to the server
 	connect: function(login, password) {
 		this.login = login;
@@ -57,29 +57,29 @@ Chatter = {
 		console.log('chatter', this);
 		if (status == Strophe.Status.CONNECTING) {
 			debug('Strophe is connecting.');
-			
+
 		} else if (status == Strophe.Status.CONNFAIL) {
 			debug('Strophe failed to connect.');
 			//$('#connect').get(0).value = 'connect';
-			
+
 		} else if (status == Strophe.Status.DISCONNECTING) {
 			debug('Strophe is disconnecting.');
-			
+
 		} else if (status == Strophe.Status.DISCONNECTED) {
 			debug('Strophe is disconnected.');
 			//$('#connect').get(0).value = 'connect';
-			
+
 		} else if (status == Strophe.Status.CONNECTED) {
 			debug('Strophe is connected.');
-			
+
 			Chatter.presence();
 			//connection.disconnect();
 		}
-		
+
 		Chatter.handleConnect(status);
 	},
-	
-	//handleConnect handles 
+
+	//handleConnect handles ?
 	handleConnect: function(status) { },
 
 	_splitId: function(id) {
@@ -97,19 +97,19 @@ Chatter = {
 		var to = msg.getAttribute('to');
 		var from = msg.getAttribute('from');
 		var type = msg.getAttribute('type');
-		
+
 		if(type == "unavailable")
 			Chatter.roaster[from] = null;
 		else
 			Chatter.roaster[from] = {};
 		console.log('presence', Chatter.roaster);
-		
+
 		Chatter.handlePresence(to, from, type);
 	},
-	
+
 	//handlePresence
 	handlePresence: function(to, from, type) { },
-	
+
 	//onMessage: message received - to, from, type, body. chat or groupchat
 	onMessage: function(msg) {
 		var to = msg.getAttribute('to');
@@ -137,7 +137,7 @@ Chatter = {
 		// returning false would remove it after it finishes.
 		return true;
 	},
-	
+
 	//chat: send a chat message to Chatter.chats[dest].chat(msg)
 	// creates new Chat if [dest] is null
 	chat: function(to, msg) {
@@ -152,7 +152,7 @@ Chatter = {
 			Chatter.chats[dest] = new Chat(dest);
 		Chatter.chats[dest].chat(msg);
 	},
-	
+
 	// groupchat: send a group chat to Chatter.rooms[dest]
 	// creates new Room if [dest] is null
 	groupchat: function(to, msg) {
@@ -168,7 +168,6 @@ Chatter = {
 		} else
 		Chatter.rooms[dest].chat(msg);
 	}
-
 };
 
 /* Room constructor
@@ -176,14 +175,13 @@ Chatter = {
  * presence: Strophe send presence role="participant" message to chatroom
  * chat: compose & send Strophe groupchat message to this.room
  */
-
 Room = function(room) {
-		this.room = room;
-	};
+	this.room = room;
+};
 
 //Room.prototype: message(from, to, type, body); handleMessage, presence, chat, 
 Room.prototype = {
-	 message: function(from, to, type, body) {
+	message: function(from, to, type, body) {
 		debug({ 
 			from: from,
 			to: to,
@@ -192,10 +190,10 @@ Room.prototype = {
 		});
 		this.handleMessage(from, to, type, body);
 	},
-  
+
   //handleMessage
 	handleMessage: function(from, to, type, body) { },
-	
+
 	//presence: Strophe send presence role="participant" message to chatroom
 	presence: function() {
 		Chatter.connection.send($pres({
@@ -205,7 +203,7 @@ Room.prototype = {
 		.cnode(Strophe.xmlElement('status', null, Chatter.status))
 		.tree());
 	},
-	
+
 	//chat: compose & send Strophe groupchat message to this.room
 	chat: function(msg) {
 		Chatter.connection.send($msg({
@@ -217,7 +215,7 @@ Room.prototype = {
 		.cnode(Strophe.xmlElement('body', null, msg))
 		.tree());
 	},
-	
+
 	//exit 
 	exit: function() {
 		Chatter.connection.send($pres({
@@ -244,7 +242,7 @@ Chat.prototype = {
 			type: type,
 			body: body
 		});
-		
+
 		this.handleMessage(from, to, type, body);
 	},
 
@@ -252,10 +250,10 @@ Chat.prototype = {
 
 	chat: function(msg) {
 		var m = $msg({
-				to: this.to,
-				from: Chatter.login,
-				type: 'chat'
-			}).cnode(Strophe.xmlElement('body', null, msg));
-		Chatter.connection.send(m.tree());
+			to: this.to,
+			from: Chatter.login,
+			type: 'chat'
+		}).cnode(Strophe.xmlElement('body', null, msg));
+	Chatter.connection.send(m.tree());
 	}
 }

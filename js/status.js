@@ -7,7 +7,7 @@
 (function ($) {
 
 poem.behaviors.append = {
-	
+
 	var status = $("#strophe-status");
 	var st = xmpp.show();
 	var cpt = 0;

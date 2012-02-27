@@ -18,8 +18,8 @@
 function strophe_chat_menu() {
   $debug = (bool)variable_get('strophe_debug', '');
   if ($debug) {
-        drupal_set_message(t('hook menu strophe_chat_menu'));
-      }
+    drupal_set_message(t('hook menu strophe_chat_menu'));
+  }
   $items['discussion-with/%'] = array(
     'page callback' => 'strophe_chat_page',
     'page arguments' => array(1),
@@ -40,8 +40,8 @@ function strophe_chat_init() {
   $debug = (bool)variable_get('strophe_debug', '');
   strophe_init();
   if ($debug) {
-        drupal_set_message(t('strophe_chat_init'));
-      }
+    drupal_set_message(t('strophe_chat_init'));
+  }
   drupal_add_js(drupal_get_path('module', 'strophe') . '/chat/chat_init.js');
 }
 
@@ -55,18 +55,21 @@ function strophe_chat_init() {
 function strophe_chat_page($name) {
   $debug = (bool)variable_get('strophe_debug', '');
   if ($debug) {
-        drupal_set_message(t('hook page strophe_chat_page'));
-      }
+    drupal_set_message(t('hook page strophe_chat_page'));
+  }
   $other = array_shift(user_load_multiple(array(), array('name' => $name)));
   include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
   drupal_add_js(drupal_get_path('module', 'strophe') . '/chat/chat.js');
-  // creates $xmpp_other to add another strophe_user to chat array in Strophe JS
-  // @see strophe.inc, strophe_user 
-  // has jid, nickname via drupal $user->name
+  /**
+   * creates strophe_user $xmpp_other to add another to chat array in Strophe JS
+   * @see strophe.inc, strophe_user 
+   * has jid, nickname via drupal $user->name
+   */
   $xmpp_other = new strophe_user($other);
   if ($debug) {
-        drupal_set_message(t(filter_xss('new user $xmpp_other created strophe_chat_page')));
-      }
+    drupal_set_message(t(filter_xss('new user $xmpp_other created strophe_chat_page')));
+  }
+  // Drupal.settings.strophe.chat
   drupal_add_js(array(
     'strophe' => array(
       'chat' => array('other' => $xmpp_other->jid),

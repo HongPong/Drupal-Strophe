@@ -5,7 +5,7 @@
  * D6: poem.XMPP.prototype.handleWannaTalk = function(handler) {
  * D6: poem.behaviors.append(function() {
  */
-Drupal.behaviors.Strophe.poem.XMPP.prototype.wannaTalk = function(to, callback, error) {
+poem.XMPP.prototype.wannaTalk = function(to, callback, error) {
 	this.connection.sendIQ(
 		$iq({to:to})
 			.c('query', {xmlns:"poem:iq:wannatalk"})
@@ -24,10 +24,10 @@ Drupal.behaviors.Strophe.poem.XMPP.prototype.wannaTalk = function(to, callback, 
  * @argument handler a closure that take two arguments, a boolean and a post action closure
  * was poem.XMPP.prototype.handleWannaTalk
  */
-Drupal.behaviors.Strophe.poem.XMPP.prototype.handleWannaTalk = function(handler) {
+poem.XMPP.prototype.handleWannaTalk = function(handler) {
 	this.handleIQ("poem:iq:wannatalk", function(iq, query) {
 		var wannatalk = query.getElementsByTagName('wannatalk')[0];
-		Drupal.behaviors.Strophe.poem.log(['wanna iq', iq, this]);
+		poem.log(['wanna iq', iq, this]);
 		var type = wannatalk.getAttribute('type');
 		var from = iq.getAttribute('from');
 		if(type == "question") {

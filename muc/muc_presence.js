@@ -1,69 +1,86 @@
 /**
  * @file appends chats on direct talk urls multi user chat
+ * 
+ * Uses Drupal.settings.strophe.direct_talk_url, Drupal.settings.xmpp.jid
+ *   Drupal.settings.strophe.click_to_talk, Drupal.settings.strophe.me
  *
+ * jQuery selectors: #xmpp_presence
  */
 
 poem.behaviors.append(function(){
-    var directTalk = function(who) {
-        poem.log('id', Drupal.settings.strophe.direct_talk_url + who);
-        xmpp.wannaTalk(who + '@' + Drupal.settings.xmpp.jid.split('@')[1],
-            function(stanza){//callback
-                poem.log(['response', stanza, $(stanza, 'wannatalk').text()]);
-                if($(stanza, 'wannatalk').text() == '1') {
-                    document.location.href = Drupal.settings.strophe.direct_talk_url + who;
-                 } else {
-                    alert(who + " doesn't wont to talk with you");
-                 }
-            },
-            function(stanza){//error
-                alert(who + " is too slow, or dead");
-            });
+  var directTalk = function(who) {
+    poem.log('id', Drupal.settings.strophe.direct_talk_url + who);
+    xmpp.wannaTalk(who + '@' + Drupal.settings.xmpp.jid.split('@')[1],
+      // callback
+      function(stanza){
+        poem.log(['response', stanza, $(stanza, 'wannatalk').text()]);
+        if($(stanza, 'wannatalk').text() == '1') {
+          document.location.href = Drupal.settings.strophe.direct_talk_url + who;
+        } 
+        else {
+          alert(who + " doesn't want to talk with you");
+        }
+      },
+      // error
+      function(stanza){
+        alert(who + " is too slow, or dead");
+      });
         //xmpp.flush();
         //document.location.href = Drupal.settings.strophe.direct_talk_url + who;
     };
-    var presence = $('#xmpp_presence');
-    muc_room.handleAvailable(function(pres){
-        var u = pres.jid.place;
-        if(presence.data('users')[u] == null) {
-            presence.data('users')[u] = true;
-            var li = $('<li>').attr('id', 'user-' + u);
-            if(pres.show != '') {
-              li.addClass(pres.show);
-            }
-            if(Drupal.settings.strophe.click_to_talk && Drupal.settings.strophe.me != u) {
-                li.append($('<a>')
-                    .attr('href', '#')
-                    .text(u)
-                    .click(function(){
-                        directTalk(u);
-                        return false;
-                    })
-               );
-            } else {
-               li.text(u);
-            }
-            presence.append(li);
-        } else {
-            presence.find('#user-' +u).removeClass('away').removeClass('chat').addClass(pres.show);
+  var presence = $('#xmpp_presence');
+  /*
+   * muc_room.handleAvailable
+   */
+  muc_room.handleAvailable(function(pres){
+    var u = pres.jid.place;
+      if(presence.data('users')[u] == null) {
+        presence.data('users')[u] = true;
+        var li = $('<li>').attr('id', 'user-' + u);
+        if(pres.show != '') {
+          li.addClass(pres.show);
         }
-        
-    });
-    muc_room.handleNotAvailable(function(pres){
-        var u = pres.jid.place;
-        if(presence.data('users')[u] != null) {
-            presence.data('users')[u] = null;
-            presence.find('#user-' + u).remove();
+        if(Drupal.settings.strophe.click_to_talk && Drupal.settings.strophe.me != u) {
+          li.append($('<a>')
+            .attr('href', '#')
+            .text(u)
+            .click(function(){
+              directTalk(u);
+              return false;
+            })
+          );
+        } 
+        else {
+          li.text(u);
         }
-    });
-    xmpp.handleConnect(function(status) {
-        if(Strophe.Status.CONNECTED == status) {
-            presence.empty();
-            presence.data('users', {});
-        } else {
-            info.text(poem.Tchat.status(status));
-            presence.empty();
-        }
-        return true;
-    });
-
+        presence.append(li);
+      } 
+      else {
+        presence.find('#user-' +u).removeClass('away').removeClass('chat').addClass(pres.show);
+      }
+  });
+    /*
+     * muc_room.handleNotAvailable
+     */
+  muc_room.handleNotAvailable(function(pres){
+    var u = pres.jid.place;
+    if(presence.data('users')[u] != null) {
+      presence.data('users')[u] = null;
+      presence.find('#user-' + u).remove();
+    }
+  });
+  /*
+   * muc_room.handleConnect
+   */
+  xmpp.handleConnect(function(status) {
+    if(Strophe.Status.CONNECTED == status) {
+      presence.empty();
+      presence.data('users', {});
+    } 
+    else {
+      info.text(poem.Tchat.status(status));
+      presence.empty();
+    }
+    return true;
+  });
 });

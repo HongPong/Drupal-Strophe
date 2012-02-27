@@ -1,9 +1,10 @@
 <?php
 /**
  *
- * @file strophe_jid($user), builder strophe_user. Uses strophe_place, strophe_domain system variables
+ * @file builder strophe_user. strophe_jid($user),
+ * Uses system variables strophe_place, strophe_domain
  * Depends on ejabberd_auth drupalAuth.inc file.
- * 
+ *
  * strophe_jid($user):
  * @return string user@strophe_domain.strophe_place
  */
@@ -12,10 +13,9 @@ include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ejabberd_auth') . '/
 
 class strophe_user {
   /**
-   * constructor makes $user with $this->jid and $this->nicknme
+   * constructor makes $user with $this->jid and $this->nickname
    *
    */
-  
   function __construct($user) {
     $debug = (bool)variable_get('strophe_debug', '');
     if ($debug) {
@@ -47,5 +47,3 @@ function strophe_jid($user) {
   . variable_get('strophe_domain', 'jabber.org') . '/'
 	. variable_get('strophe_place', 'Drupal_Strophe_Client');
 }
-
-
