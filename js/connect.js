@@ -20,9 +20,10 @@
 })(jQuery);*/
 
 (function ($) {
-Drupal.behaviors.Strophe = {
+Drupal.behaviors.strophe = {
   attach: function (context, settings) {
     poem.behaviors.trigger();
 	  xmpp.connect();
-  }
+    }
+  };
 })(jQuery);

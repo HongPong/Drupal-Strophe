@@ -45,8 +45,8 @@ poem.XMPP.prototype.handleWannaTalk = function(handler) {
 	});
 };
 
-Drupal.behaviors.Strophe.poem.behaviors.append(function() {
-	Drupal.behaviors.Strophe.xmpp.handleWannaTalk(function(who){
+poem.behaviors.append(function() {
+	xmpp.handleWannaTalk(function(who){
 		var name = who.split('@')[0];
 		var answer = window.confirm(name + ' wonts to talk with you');
 		return [answer, function() {
