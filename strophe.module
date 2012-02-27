@@ -28,8 +28,8 @@ function strophe_init() {
     include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ejabberd_auth') . '/drupalAuth.inc';
     include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'strophe') . '/strophe.inc';
     // attaches bosh service javascript
-    // 'xmpp' JID set to strope_jid($user); passwd to ejabberd_auth_hash($user->name); nickname($user)
-
+    // Drupal.settings.xmpp JID set to strope_jid($user); passwd to ejabberd_auth_hash($user->name); 
+    // Drupal.settings.xmpp nickname($user)
     drupal_add_js(array(
       'xmpp' => array(
         'bosh_service' => variable_get('strophe_bosh_url', '/http-bind'),
@@ -40,12 +40,12 @@ function strophe_init() {
     )
     , array('type' => 'setting', 'scope' => JS_DEFAULT));
     //chat 'b64', 'md5', 'sha1', 'drupal'
-
+    // loader for js files
     $js = array('strophe', 'poem', 'init');
     foreach ($js as $j) {
       drupal_add_js(drupal_get_path('module', 'strophe') . "/js/$j.js");
     }
-
+    // if user is logged in
     if (0 != $user->uid) {
      // call connect.js file
       drupal_add_js(drupal_get_path('module', 'strophe') . "/js/connect.js", 
