@@ -6,7 +6,7 @@
  *
  */
 
-var Drupal.behaviors.Strophe.xmpp;
+var xmpp;
 
 (function ($) {
 
